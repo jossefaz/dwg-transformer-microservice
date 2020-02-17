@@ -1,0 +1,15 @@
+version : '3'
+services :
+    nginx :
+        restart: always
+        build :
+            context : ./nginx
+        ports : 
+            - '8091:80'
+        depends_on :
+            - transformer
+    
+    transformer :
+        build :
+            context : ./transformer
+    

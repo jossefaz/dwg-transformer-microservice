@@ -25,7 +25,7 @@ func uploadHandler(w http.ResponseWriter, r *http.Request) {
 </head>
 <body>
 <h2>Upload a file</h2>
-<form action="/receive" method="post" enctype="multipart/form-data">
+<form action="/transformer/receive" method="post" enctype="multipart/form-data">
   <label for="file">Filename:</label>
   <input type="file" name="file" id="file">
   <br>
