@@ -16,9 +16,6 @@ RUN go get -d -v
 RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o /go/bin/main
 
 FROM python:2.7.17-buster
-
-
-
 RUN apt-get update && apt-get upgrade -y &&\
     apt-get install -y git autoconf libtool swig texinfo build-essential gcc python-libxml2 && \
     LIBXML2VER=2.9.1 && \

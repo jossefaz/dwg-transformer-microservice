@@ -7,9 +7,9 @@ services :
         ports : 
             - '8091:80'
         depends_on :
-            - transformer
+            - controller
     
-    transformer :
+    controller :
         build :
-            context : ./transformer
+            context : ./controller
     
