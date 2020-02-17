@@ -2,18 +2,16 @@ sudo : required
 services :
     - docker
 before_install :
-    - docker build -t yossefazoulay/dwg-transformer -f ./transformer/Dockerfile .
-    - docker build -t yossefazoulay/dwg-nginx -f ./nginx/Dockerfile .
-    - docker build -t yossefazoulay/dwg-controller -f ./controller/Dockerfile .
-    
+    - docker build -t yossefazoulay/dwg-transformer ./transformer
+
 script :
     docker run -e CI=true yossefazoulay/dwg-transformer
 
 after_sucess :
     - echo "$DOCKER_PWD" | docker login -u "$DOCKER_ID" --password-stdin
-    - docker build -t yossefazoulay/dwg-transformer -f ./transformer/Dockerfile .
-    - docker build -t yossefazoulay/dwg-nginx -f ./nginx/Dockerfile .
-    - docker build -t yossefazoulay/dwg-controller -f ./controller/Dockerfile .
+    - docker build -t yossefazoulay/dwg-transformer ./transformer
+    - docker build -t yossefazoulay/dwg-nginx ./nginx/
+    - docker build -t yossefazoulay/dwg-controller ./controller
     - docker push yossefazoulay/dwg-transformer
     - docker push yossefazoulay/dwg-nginx
     - docker push yossefazoulay/dwg-controller
