@@ -1,4 +1,7 @@
 FROM python:2.7.17-buster
+
+MAINTAINER azoulayos@protonmail.com
+
 RUN apt-get update && apt-get upgrade -y &&\
     apt-get install -y git autoconf libtool swig texinfo build-essential gcc python-libxml2 && \
     LIBXML2VER=2.9.1 && \
