@@ -1,0 +1,56 @@
+apiVersion : apps/v1
+kind : Deployment
+metadata :
+    name : dwg-nginx
+spec : 
+    selector :
+        matchLabels :
+            app : dwg-nginx
+    replicas : 1
+    template :
+        metadata :
+            labels : 
+                app : dwg-nginx
+        spec : 
+            containers :
+                - name : dwg-nginx
+                  image : yossefazoulay/dwg-nginx
+
+---
+
+apiVersion : apps/v1
+kind : Deployment
+metadata : 
+    name : dwg-controller
+spec : 
+    selector : 
+        matchLabels :
+            app : dwg-controller
+    replicas : 1
+    template :
+        metadata : 
+            labels : 
+                app : dwg-controller
+        spec : 
+            containers : 
+                - name : dwg-controller
+                  image : yossefazoulay/dwg-controller
+---
+apiVersion : apps/v1
+kind : Deployment
+metadata : 
+    name : dwg-transformer
+spec : 
+    selector : 
+        matchLabels :
+            app : dwg-transformer
+    replicas : 1
+    template : 
+        metadata :
+            labels : 
+                app : dwg-transformer
+        spec : 
+            containers :
+                - name : dwg-transformer
+                  image : yossefazoulay/dwg-transformer
+    
