@@ -15,7 +15,7 @@ RUN go get -d -v
 # Build the binary.
 RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o /go/bin/main
 
-FROM python:2.7.17-buster
+FROM python:2.7.17-buster AS extracting
 RUN apt-get update && apt-get upgrade -y &&\
     apt-get install -y git autoconf libtool swig texinfo build-essential gcc python-libxml2 && \
     LIBXML2VER=2.9.1 && \
@@ -32,12 +32,18 @@ WORKDIR /app
 RUN git clone git://git.sv.gnu.org/libredwg.git && \
      cd libredwg && \
      sh autogen.sh && \
-     ./configure --enable-trace && \
+     ./configure --enable-trace --prefix=/usr/local && \
      make && \
-     make install && \
-     make check && \
-     ldconfig
+     mkdir ldwg && \
+     make install DESTDIR=$PWD/ldwg && \
+     make check DESTDIR=$PWD/ldwg
+     
 
+FROM bitnami/minideb:jessie
+COPY --from=extracting /app/libredwg/ldwg/usr/local/bin/* /usr/local/bin/
+COPY --from=extracting /app/libredwg/ldwg/usr/local/include/* /usr/local/include/
+COPY --from=extracting /app/libredwg/ldwg/usr/local/lib/* /usr/local/lib/
+RUN ldconfig
 COPY --from=builder /go/bin/main .
 EXPOSE 8090
-ENTRYPOINT [ "./main" ] 
+ENTRYPOINT [ "./main" ]
