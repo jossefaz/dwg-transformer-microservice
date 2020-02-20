@@ -1,61 +1,9 @@
 package main
 
-import (
-	"fmt"
-	"io"
-	"log"
-	"net/http"
-	"os"
-	"path/filepath"
-)
-
-// infoHandler returns an HTML upload form
-func uploadHandler(w http.ResponseWriter, r *http.Request) {
-	if r.Method == "GET" {
-		fmt.Fprintf(w, `<html>
-<head>
-  <title>GoLang HTTP Fileserver</title>
-</head>
-<body>
-<h2>Upload a file</h2>
-<form action="/controller/receive" method="post" enctype="multipart/form-data">
-  <label for="file">Filename:</label>
-  <input type="file" name="file" id="file">
-  <br>
-  <input type="submit" name="submit" value="Submit">
-</form>
-</body>
-</html>`)
-	}
-}
-
-// receiveHandler accepts the file and saves it to the current working directory
-func receiveHandler(w http.ResponseWriter, r *http.Request) {
-	// the FormFile function takes in the POST input id file
-	file, header, err := r.FormFile("file")
-
-	if err != nil {
-		fmt.Fprintln(w, err)
-		return
-	}
-	defer file.Close()
-	out, err := os.Create(filepath.Join("uploads", header.Filename))
-	if err != nil {
-		fmt.Fprintf(w, "Unable to create the file for writing. Check your write access privilege")
-		return
-	}
-	defer out.Close()
-	// write the content from POST to the file
-	_, err = io.Copy(out, file)
-	if err != nil {
-		fmt.Fprintln(w, err)
-	}
-	fmt.Fprintf(w, "File uploaded successfully: ")
-	fmt.Fprintf(w, header.Filename)
-}
-
 func main() {
-	http.HandleFunc("/upload", uploadHandler)   // Display a form for user to upload file
-	http.HandleFunc("/receive", receiveHandler) // Handle the incoming file
-	log.Fatal(http.ListenAndServe(":8090", nil))
+	rmqConn := newRabbit("amqp://usr:secret_pass@localhost:15672/", "transformDWG")
+	defer rmqConn.conn.Close()
+	defer rmqConn.chanL.Close()
+	rmqConn.listenMessage()
+
 }

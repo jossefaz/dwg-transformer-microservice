@@ -22,6 +22,4 @@ COPY --from=builder /go/bin/main .
 RUN mkdir uploads && chmod 777 uploads
 # Run the hello binary.
 
-EXPOSE 3030
-
 ENTRYPOINT ["./main"]

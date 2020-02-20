@@ -45,5 +45,4 @@ COPY --from=extracting /app/libredwg/ldwg/usr/local/include/* /usr/local/include
 COPY --from=extracting /app/libredwg/ldwg/usr/local/lib/* /usr/local/lib/
 RUN ldconfig
 COPY --from=builder /go/bin/main .
-EXPOSE 8090
 ENTRYPOINT [ "./main" ]
