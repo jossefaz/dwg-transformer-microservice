@@ -35,41 +35,16 @@ spec :
           port : 8090
     type : ClusterIP
 ---
-kind: Service
 apiVersion: v1
-metadata:
-  name: rabbitmq-internal
-  labels:
-    app: rabbitmq
-spec:
-  clusterIP: None
-  ports:
-    - name: http
-      protocol: TCP
-      port: 15672
-    - name: amqp
-      protocol: TCP
-      port: 5672
-  selector:
-    app: rabbitmq  
----
 kind: Service
-apiVersion: v1
 metadata:
-  name: rabbitmq
   labels:
-    app: rabbitmq
-    type: LoadBalancer
+    component: rabbitmq
+  name: rabbitmq-service
 spec:
-  selector:
-    app: rabbitmq
   ports:
-   - name: rabbitmq-mgmt-port
-     protocol: TCP
-     port: 15672
-     targetPort: 15672
-   - name: rabbitmq-amqp-port
-     protocol: TCP
-     port: 5672
-     targetPort: 5672
+  - port: 5672
+  selector:
+    app: taskQueue
+    component: rabbitmq
     

@@ -1,0 +1,28 @@
+apiVersion : v1
+kind : PersistentVolumeClaim
+metadata :
+    name : dwg-pvc
+spec : 
+    storageClassName : dwg-storage
+    accessModes :
+        - ReadWriteOnce
+    resources : 
+        requests : 
+            storage : 20Gi
+
+---
+# how do we want it implemented
+
+apiVersion : v1
+kind : PersistentVolume
+metadata :
+    name : local-storage
+spec : 
+    storageClassName : dwg-storage
+    capacity :
+        storage : 20Gi
+    accessModes :
+        - ReadWriteOnce
+    hostPath :
+        path : "/mnt/dwg-transformer/transformed"
+        type : DirectoryOrCreate

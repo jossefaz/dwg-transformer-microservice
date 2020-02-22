@@ -35,6 +35,10 @@ spec :
             containers : 
                 - name : dwg-controller
                   image : yossefazoulay/dwg-controller
+            volumes :
+                - name : dwg-persistent-storage
+                  persistentVolumeClaim :
+                    claimName : dwg-pvc 
 ---
 apiVersion : apps/v1
 kind : Deployment
@@ -53,4 +57,31 @@ spec :
             containers :
                 - name : dwg-transformer
                   image : yossefazoulay/dwg-transformer
+            volumes :
+                - name : dwg-persistent-storage
+                  persistentVolumeClaim :
+                    claimName : dwg-pvc 
+---
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  labels:
+    component: rabbitmq
+  name: rabbitmq-controller
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: taskQueue
+        component: rabbitmq
+    spec:
+      containers:
+      - image: rabbitmq
+        name: rabbitmq
+        ports:
+        - containerPort: 5672
+        resources:
+          limits:
+            cpu: 100m
     
