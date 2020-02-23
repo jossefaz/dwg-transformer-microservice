@@ -40,11 +40,11 @@ kind: Service
 metadata:
   labels:
     component: rabbitmq
-  name: rabbitmq-service
+  name: rabbitmq
 spec:
   ports:
   - port: 5672
   selector:
-    app: taskQueue
+    app: dwg-queue
     component: rabbitmq
     

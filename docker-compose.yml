@@ -1,15 +1,26 @@
 version : '3'
 services :
-    nginx :
-        restart: always
-        build :
-            context : ./nginx
-        ports : 
-            - '8091:80'
-        depends_on :
-            - controller
-    
-    controller :
-        build :
-            context : ./controller
-    
+  rabbitmq:
+    image: rabbitmq
+    ports:
+    - "5672:5672"
+    healthcheck:
+        test: ["CMD", "curl", "-f", "http://localhost:15672"]
+        interval: 30s
+        timeout: 10s
+        retries: 5
+  controller :
+    depends_on : 
+      - rabbitmq
+    build : 
+      context : ./controller
+    restart: on-failure
+  transformer :
+    depends_on : 
+      - rabbitmq
+    build : 
+      context : ./transformer
+    restart: on-failure
+
+
+              

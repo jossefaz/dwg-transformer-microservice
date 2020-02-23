@@ -58,8 +58,10 @@ func (rmq rabbitmq) listenMessage() {
 	stopChan := make(chan bool)
 
 	go func() {
+		counter := 0
 		fmt.Printf("Consumer ready, PID: %d", os.Getpid())
 		for d := range messageChannel {
+			counter++
 			fmt.Printf("\nReceived a message: %s \n", d.Body)
 
 			pFIle := &pickFile{}
@@ -72,7 +74,7 @@ func (rmq rabbitmq) listenMessage() {
 			if err := d.Ack(false); err != nil {
 				fmt.Printf("Error acknowledging message : %s", err)
 			} else {
-				fmt.Printf("\nAcknowledged message\n")
+				fmt.Println("Acknowledged message :", counter)
 			}
 
 		}
