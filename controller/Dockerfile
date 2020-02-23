@@ -19,7 +19,8 @@ FROM alpine
 # Copy our static executable.
 WORKDIR /app
 COPY --from=builder /go/bin/main .
-RUN mkdir uploads && chmod 777 uploads
+RUN mkdir test && chmod 777 test
+
 # Run the hello binary.
 
 ENTRYPOINT ["./main"]
