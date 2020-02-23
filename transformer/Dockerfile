@@ -11,9 +11,8 @@ WORKDIR $GOPATH/src/package/app/
 COPY . .
 # Fetch dependencies.
 # Using go get.
-RUN go get -d -v
-# Build the binary.
-RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o /go/bin/main
+RUN cd src && go get -d -v && \
+    CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o /go/bin/main
 
 FROM python:2.7.17-buster AS extracting
 RUN apt-get update && apt-get upgrade -y &&\
@@ -46,6 +45,6 @@ COPY --from=extracting /app/libredwg/ldwg/usr/local/include/* /usr/local/include
 COPY --from=extracting /app/libredwg/ldwg/usr/local/lib/* /usr/local/lib/
 RUN ldconfig
 WORKDIR /app
-RUN mkdir shared && chmod 777 shared
+RUN mkdir shared && chmod 777 sharedsr  
 COPY --from=builder /go/bin/main .
 ENTRYPOINT [ "./main" ]

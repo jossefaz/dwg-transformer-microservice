@@ -9,9 +9,8 @@ WORKDIR $GOPATH/src/package/app/
 COPY . .
 # Fetch dependencies.
 # Using go get.
-RUN go get -d -v
-# Build the binary.
-RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -ldflags="-w -s" -o /go/bin/main
+RUN cd src && go get -d -v && \
+    CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o /go/bin/main
 ############################
 # STEP 2 build a small image
 ############################
