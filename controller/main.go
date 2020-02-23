@@ -1,17 +1,11 @@
 package main
 
-import "fmt"
+import "time"
 
 func main() {
-	// rmqConn := newRabbit("amqp://guest:guest@rabbitmq/", "transformDWG")
-	// defer rmqConn.conn.Close()
-	// defer rmqConn.chanL.Close()
-
-	// for i := 0; i < 1000; i++ {
-	// 	time.Sleep(time.Second)
-	// 	rmqConn.sendMessage(message)
-	// }
-
+	rmqConn := newRabbit("amqp://guest:guest@rabbitmq/", "transformDWG")
+	defer rmqConn.conn.Close()
+	defer rmqConn.chanL.Close()
 	root := "./"
 
 	files := listFilesInDir(root)
@@ -22,8 +16,8 @@ func main() {
 			Name: "File Uploaded",
 			Path: file,
 		}
-		// rmqConn.sendMessage(message)
-		fmt.Println(message)
+		time.Sleep(time.Second)
+		rmqConn.sendMessage(message)
 	}
 
 }

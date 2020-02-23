@@ -22,8 +22,8 @@ func handleError(err error, msg string) {
 }
 
 type pickFile struct {
-	name string
-	path string
+	Name string
+	Path string
 }
 
 func newRabbit(connString string, queueName string) (instance rabbitmq) {
@@ -74,7 +74,7 @@ func (rmq rabbitmq) listenMessage() {
 			if err := d.Ack(false); err != nil {
 				fmt.Printf("Error acknowledging message : %s", err)
 			} else {
-				fmt.Println("Acknowledged message :", counter)
+				fmt.Println(pFIle.Path)
 			}
 
 		}

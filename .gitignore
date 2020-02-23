@@ -1,3 +1,4 @@
 main
 nohup.out
 controller/uploads/*
+uploads/*

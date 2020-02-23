@@ -19,7 +19,7 @@ FROM alpine
 # Copy our static executable.
 WORKDIR /app
 COPY --from=builder /go/bin/main .
-RUN mkdir test && chmod 777 test
+RUN mkdir shared && chmod 777 shared
 
 # Run the hello binary.
 
