@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"os/exec"
 
 	"github.com/streadway/amqp"
 )
@@ -74,7 +75,13 @@ func (rmq rabbitmq) listenMessage() {
 			if err := d.Ack(false); err != nil {
 				fmt.Printf("Error acknowledging message : %s", err)
 			} else {
-				fmt.Println(pFIle.Path)
+				outpath := pFIle.Path[:len(pFIle.Path)-3] + "dxf"
+				cmd := exec.Command("dwgread", pFIle.Path, "-O", "DXF", "-o", outpath)
+				out, err := cmd.CombinedOutput()
+				if err != nil {
+					fmt.Printf("cmd.Run() failed with %s\n", err)
+				}
+				fmt.Println(string(out))
 			}
 
 		}
