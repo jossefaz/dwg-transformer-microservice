@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"os"
 
 	"github.com/streadway/amqp"
 )
@@ -26,19 +27,41 @@ func handleError(err error, msg string) {
 }
 
 func newRabbit(connString string, queueName string) (instance rabbitmq) {
-	conn, err := amqp.Dial(connString)
-	handleError(err, "Can't connect to AMQP")
-
-	amqpChannel, err := conn.Channel()
-	handleError(err, "Can't create a amqpChannel")
-
-	queue, err := amqpChannel.QueueDeclare(queueName, true, false, false, false, nil)
-	handleError(err, "Could not declare `add` queue")
+	conn := dial(connString)
+	amqpChannel := getChannel(conn)
+	queue := connectToQueue(amqpChannel, queueName)
 	return rabbitmq{
 		conn:  conn,
 		chanL: amqpChannel,
 		queue: queue,
 	}
+}
+
+func dial(connString string) *amqp.Connection {
+	conn, err := amqp.Dial(connString)
+	handleError(err, "Can't connect to AMQP")
+	if err != nil {
+		os.Exit(1)
+	}
+	return conn
+}
+
+func getChannel(conn *amqp.Connection) *amqp.Channel {
+	c, err := conn.Channel()
+	handleError(err, "Can't create a amqpChannel")
+	if err != nil {
+		os.Exit(1)
+	}
+	return c
+}
+
+func connectToQueue(c *amqp.Channel, queueName string) amqp.Queue {
+	q, err := c.QueueDeclare(queueName, true, false, false, false, nil)
+	handleError(err, "Could not declare `add` queue")
+	if err != nil {
+		os.Exit(1)
+	}
+	return q
 }
 
 func (rmq rabbitmq) sendMessage(m pickFile) {
