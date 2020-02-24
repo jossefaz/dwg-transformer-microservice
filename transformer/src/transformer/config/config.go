@@ -1,8 +1,8 @@
 package config
 
 import (
-	"github.com/tkanos/gonfig"
-	"src/controller/utils"
+"github.com/tkanos/gonfig"
+"src/transformer/utils"
 )
 
 type Configuration struct {
@@ -26,4 +26,3 @@ func GetConfig(env string)  Configuration {
 	utils.HandleError(err, "Cannot load/read config file")
 	return configuration
 }
-

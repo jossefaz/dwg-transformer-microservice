@@ -21,11 +21,8 @@ WORKDIR /app
 RUN mkdir shared && \
     mkdir -p config/files && \
     chmod 777 shared
-
 COPY --from=builder /go/bin/main .
-
 COPY /src/controller/config/files/* ./config/files/
-WORKDIR /app
 # Run the hello binary.
 
 CMD ["./main", "prod"]

@@ -44,7 +44,16 @@ COPY --from=extracting /app/libredwg/ldwg/usr/local/bin/* /usr/local/bin/
 COPY --from=extracting /app/libredwg/ldwg/usr/local/include/* /usr/local/include/
 COPY --from=extracting /app/libredwg/ldwg/usr/local/lib/* /usr/local/lib/
 RUN ldconfig
+
 WORKDIR /app
-RUN mkdir shared && chmod 777 shared
+
+RUN mkdir shared && \
+    mkdir -p config/files && \
+    chmod 777 shared
 COPY --from=builder /go/bin/main .
-ENTRYPOINT [ "./main" ]
+COPY /src/transformer/config/files/* ./config/files/
+# Run the hello binary.
+CMD ["./main", "prod"]
+
+
+

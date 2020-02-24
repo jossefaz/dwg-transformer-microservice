@@ -15,12 +15,7 @@ type rabbitmq struct {
 	Queue amqp.Queue
 }
 
-func handleError(err error, msg string) {
-	if err != nil {
-		fmt.Printf("%s: %s", msg, err)
-	}
 
-}
 
 func NewRabbit(connString string, queueName string) (instance rabbitmq) {
 	conn := dial(connString)
@@ -35,7 +30,7 @@ func NewRabbit(connString string, queueName string) (instance rabbitmq) {
 
 func dial(connString string) *amqp.Connection {
 	conn, err := amqp.Dial(connString)
-	handleError(err, "Can't connect to AMQP")
+	utils.HandleError(err, "Can't connect to AMQP")
 	if err != nil {
 		os.Exit(1)
 	}
@@ -44,7 +39,7 @@ func dial(connString string) *amqp.Connection {
 
 func getChannel(conn *amqp.Connection) *amqp.Channel {
 	c, err := conn.Channel()
-	handleError(err, "Can't create a amqpChannel")
+	utils.HandleError(err, "Can't create a amqpChannel")
 	if err != nil {
 		os.Exit(1)
 	}
@@ -53,7 +48,7 @@ func getChannel(conn *amqp.Connection) *amqp.Channel {
 
 func connectToQueue(c *amqp.Channel, queueName string) amqp.Queue {
 	q, err := c.QueueDeclare(queueName, true, false, false, false, nil)
-	handleError(err, "Could not declare `add` queue")
+	utils.HandleError(err, "Could not declare `add` queue")
 	if err != nil {
 		os.Exit(1)
 	}
@@ -75,7 +70,7 @@ func (rmq rabbitmq) sendMessage(body []byte) {
 func (rmq rabbitmq) ListenMessage() {
 
 	err := rmq.ChanL.Qos(1, 0, false)
-	handleError(err, "Could not configure QoS")
+	utils.HandleError(err, "Could not configure QoS")
 	messageChannel, err := rmq.ChanL.Consume(
 		rmq.Queue.Name,
 		"",
@@ -85,7 +80,7 @@ func (rmq rabbitmq) ListenMessage() {
 		false,
 		nil,
 	)
-	handleError(err, "Could not register consumer")
+	utils.HandleError(err, "Could not register consumer")
 
 	stopChan := make(chan bool)
 
