@@ -1,46 +1,35 @@
-package main
+package queue
 
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/streadway/amqp"
 	"os"
 	"os/exec"
-
-	"github.com/streadway/amqp"
+	"src/controller/utils"
 )
 
-type pickFile struct {
-	Name string
-	Path string
-}
-
 type rabbitmq struct {
-	conn  *amqp.Connection
-	chanL *amqp.Channel
-	queue amqp.Queue
+	Conn  *amqp.Connection
+	ChanL *amqp.Channel
+	Queue amqp.Queue
 }
 
-func handleError(err error, msg string) {
-	if err != nil {
-		fmt.Printf("%s: %s", msg, err)
-	}
 
-}
-
-func newRabbit(connString string, queueName string) (instance rabbitmq) {
+func NewRabbit(connString string, queueName string) (instance rabbitmq) {
 	conn := dial(connString)
 	amqpChannel := getChannel(conn)
 	queue := connectToQueue(amqpChannel, queueName)
 	return rabbitmq{
-		conn:  conn,
-		chanL: amqpChannel,
-		queue: queue,
+		Conn:  conn,
+		ChanL: amqpChannel,
+		Queue: queue,
 	}
 }
 
 func dial(connString string) *amqp.Connection {
 	conn, err := amqp.Dial(connString)
-	handleError(err, "Can't connect to AMQP")
+	utils.HandleError(err, "Can't connect to AMQP")
 	if err != nil {
 		os.Exit(1)
 	}
@@ -49,7 +38,7 @@ func dial(connString string) *amqp.Connection {
 
 func getChannel(conn *amqp.Connection) *amqp.Channel {
 	c, err := conn.Channel()
-	handleError(err, "Can't create a amqpChannel")
+	utils.HandleError(err, "Can't create a amqpChannel")
 	if err != nil {
 		os.Exit(1)
 	}
@@ -58,36 +47,31 @@ func getChannel(conn *amqp.Connection) *amqp.Channel {
 
 func connectToQueue(c *amqp.Channel, queueName string) amqp.Queue {
 	q, err := c.QueueDeclare(queueName, true, false, false, false, nil)
-	handleError(err, "Could not declare `add` queue")
+	utils.HandleError(err, "Could not declare `add` queue")
 	if err != nil {
 		os.Exit(1)
 	}
 	return q
 }
 
-func (rmq rabbitmq) sendMessage(m pickFile) {
-	body, err := json.Marshal(m)
-	if err != nil {
-		handleError(err, "Error encoding JSON")
-	}
-	err = rmq.chanL.Publish("", rmq.queue.Name, false, false, amqp.Publishing{
+func (rmq rabbitmq) SendMessage(body []byte) {
+	err := rmq.ChanL.Publish("", rmq.Queue.Name, false, false, amqp.Publishing{
 		DeliveryMode: amqp.Persistent,
 		ContentType:  "text/plain",
 		Body:         body,
 	})
-
 	if err != nil {
 		fmt.Println(err)
 	}
-	fmt.Println(m)
+	fmt.Println(string(body))
 }
 
-func (rmq rabbitmq) listenMessage() {
+func (rmq rabbitmq) ListenMessage() {
 
-	err := rmq.chanL.Qos(1, 0, false)
-	handleError(err, "Could not configure QoS")
-	messageChannel, err := rmq.chanL.Consume(
-		rmq.queue.Name,
+	err := rmq.ChanL.Qos(1, 0, false)
+	utils.HandleError(err, "Could not configure QoS")
+	messageChannel, err := rmq.ChanL.Consume(
+		rmq.Queue.Name,
 		"",
 		false,
 		false,
@@ -95,7 +79,7 @@ func (rmq rabbitmq) listenMessage() {
 		false,
 		nil,
 	)
-	handleError(err, "Could not register consumer")
+	utils.HandleError(err, "Could not register consumer")
 
 	stopChan := make(chan bool)
 
@@ -106,7 +90,7 @@ func (rmq rabbitmq) listenMessage() {
 			counter++
 			fmt.Printf("\nReceived a message: %s \n", d.Body)
 
-			pFIle := &pickFile{}
+			pFIle := &utils.PickFile{}
 
 			err := json.Unmarshal(d.Body, pFIle)
 

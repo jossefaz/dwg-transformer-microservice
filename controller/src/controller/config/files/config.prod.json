@@ -1,0 +1,11 @@
+{
+  "QueueConnString" : "amqp://guest:guest@lrabbitmq/",
+  "Queue" : {
+    "Rabbitmq" : {
+      "ConnString" : "amqp://guest:guest@localhost:5762/",
+      "QueueNames" : {
+        "ConvertDWG" : "ConvertDWG"
+      }
+    }
+  }
+}

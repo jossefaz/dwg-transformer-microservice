@@ -1,4 +1,4 @@
-package main
+package utils
 
 import (
 	"fmt"
@@ -6,7 +6,7 @@ import (
 	"path/filepath"
 )
 
-func listFilesInDir(root string) []string {
+func ListFilesInDir(root string) []string {
 
 	files := []string{}
 

@@ -9,7 +9,7 @@ WORKDIR $GOPATH/src/package/app/
 COPY . .
 # Fetch dependencies.
 # Using go get.
-RUN cd src && go get -d -v && \
+RUN cd src/controller && go get -d -v && \
     CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o /go/bin/main
 ############################
 # STEP 2 build a small image
@@ -17,9 +17,15 @@ RUN cd src && go get -d -v && \
 FROM alpine
 # Copy our static executable.
 WORKDIR /app
-COPY --from=builder /go/bin/main .
-RUN mkdir shared && chmod 777 shared
 
+RUN mkdir shared && \
+    mkdir -p config/files && \
+    chmod 777 shared
+
+COPY --from=builder /go/bin/main .
+
+COPY /src/controller/config/files/* ./config/files/
+WORKDIR /app
 # Run the hello binary.
 
-ENTRYPOINT ["./main"]
+CMD ["./main", "prod"]

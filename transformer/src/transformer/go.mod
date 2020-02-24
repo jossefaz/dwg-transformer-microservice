@@ -1,4 +1,4 @@
-module controller
+module src/transformer
 
 go 1.13
 
