@@ -1,8 +1,7 @@
-package config
+package main
 
 import (
 	"github.com/tkanos/gonfig"
-	"dwg.transformer/main/lib/utils"
 )
 
 type Configuration struct {
@@ -23,7 +22,7 @@ func GetConfig(env string)  Configuration {
 	configEnv["prod"] = "./config/files/config.prod.json"
 	configuration := Configuration{}
 	err := gonfig.GetConf(configEnv[env], &configuration)
-	utils.HandleError(err, "Cannot load/read config file")
+	HandleError(err, "Cannot load/read config file")
 	return configuration
 }
 

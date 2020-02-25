@@ -1,4 +1,4 @@
-package queue
+package main
 
 import (
 	"encoding/json"
@@ -6,7 +6,7 @@ import (
 	"github.com/streadway/amqp"
 	"os"
 	"os/exec"
-	"dwg.transformer/main/lib/utils"
+	"github.com/yossefazoulay/dwg_transformer/tree/master/lib/utils"
 )
 
 type rabbitmq struct {
