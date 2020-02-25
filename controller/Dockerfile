@@ -7,8 +7,6 @@ FROM golang:alpine AS builder
 RUN apk update && apk add --no-cache git
 WORKDIR $GOPATH/src/package/app/
 COPY ./ ./
-COPY ../lib ./
-COPY ../go.mod ./
 # Fetch dependencies.
 # Using go get.
 RUN go get -d -v ./... && \
@@ -26,4 +24,4 @@ COPY --from=builder /go/bin/main .
 COPY ./config/*.json ./config/
 # Run the hello binary.
 
-CMD ["./main", "dev"]
+CMD ["./main", "prod"]

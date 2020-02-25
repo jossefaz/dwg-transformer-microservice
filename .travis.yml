@@ -9,6 +9,7 @@ after_sucess :
     - docker build -t yossefazoulay/dwg-transformer ./transformer
     - docker build -t yossefazoulay/dwg-nginx ./nginx/
     - docker build -t yossefazoulay/dwg-controller ./controller
+    - docker build -t yossefazoulay/dwg-worker ./worker
     - docker push yossefazoulay/dwg-transformer
     - docker push yossefazoulay/dwg-nginx
     - docker push yossefazoulay/dwg-controller

@@ -17,8 +17,9 @@ RUN go get -d -v && CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o /go/bin/ma
 
 FROM bitnami/minideb:jessie
 
-WORKDIR /app
-RUN mkdir shared && chmod 777 shared  
+RUN mkdir shared config && \
+    chmod 777 shared
 COPY --from=builder /go/bin/main .
-
-ENTRYPOINT [ "./main" ]
+COPY ./config/*.json ./config/
+# Run the hello binary.
+CMD ["./main", "prod"]

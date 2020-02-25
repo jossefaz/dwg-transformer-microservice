@@ -47,9 +47,10 @@ RUN ldconfig
 
 WORKDIR /app
 
-RUN mkdir shared && \
+RUN mkdir shared config && \
     chmod 777 shared
 COPY --from=builder /go/bin/main .
+COPY ./config/*.json ./config/
 # Run the hello binary.
 CMD ["./main", "prod"]
 
