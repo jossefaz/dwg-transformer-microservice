@@ -11,7 +11,7 @@ WORKDIR $GOPATH/src/package/app/
 COPY . .
 # Fetch dependencies.
 # Using go get.
-RUN cd src/transformer && go get -d -v && \
+RUN go get -d -v && \
     CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o /go/bin/main
 
 FROM python:2.7.17-buster AS extracting

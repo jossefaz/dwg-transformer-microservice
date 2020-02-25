@@ -3,9 +3,9 @@ package main
 import (
 	"encoding/json"
 	"os"
-	"src/controller/config"
-	"src/controller/queue"
-	"src/controller/utils"
+	"dwg.transformer/main/lib/config"
+	"dwg.transformer/main/lib/queue"
+	"dwg.transformer/main/lib/utils"
 	"time"
 )
 

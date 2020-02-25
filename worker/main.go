@@ -2,8 +2,8 @@ package main
 
 import (
 	"os"
-	"src/transformer/config"
-	"src/transformer/queue"
+	"dwg.transformer/main/lib/config"
+	"dwg.transformer/main/lib/queue"
 )
 
 func main() {

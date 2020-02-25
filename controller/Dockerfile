@@ -9,7 +9,7 @@ WORKDIR $GOPATH/src/package/app/
 COPY . .
 # Fetch dependencies.
 # Using go get.
-RUN cd src/controller && go get -d -v && \
+RUN go get -d -v && \
     CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o /go/bin/main
 ############################
 # STEP 2 build a small image
@@ -22,7 +22,7 @@ RUN mkdir shared && \
     mkdir -p config/files && \
     chmod 777 shared
 COPY --from=builder /go/bin/main .
-COPY /src/controller/config/files/* ./config/files/
+COPY ../lib/config/files/* ./config/files/
 # Run the hello binary.
 
 CMD ["./main", "prod"]

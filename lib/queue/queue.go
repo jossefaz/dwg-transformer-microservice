@@ -6,7 +6,7 @@ import (
 	"github.com/streadway/amqp"
 	"os"
 	"os/exec"
-	"src/worker/utils"
+	"dwg.transformer/main/lib/utils"
 )
 
 type rabbitmq struct {
@@ -14,7 +14,6 @@ type rabbitmq struct {
 	ChanL *amqp.Channel
 	Queue amqp.Queue
 }
-
 
 
 func NewRabbit(connString string, queueName string) (instance rabbitmq) {
@@ -55,7 +54,7 @@ func connectToQueue(c *amqp.Channel, queueName string) amqp.Queue {
 	return q
 }
 
-func (rmq rabbitmq) sendMessage(body []byte) {
+func (rmq rabbitmq) SendMessage(body []byte) {
 	err := rmq.ChanL.Publish("", rmq.Queue.Name, false, false, amqp.Publishing{
 		DeliveryMode: amqp.Persistent,
 		ContentType:  "text/plain",
@@ -64,7 +63,7 @@ func (rmq rabbitmq) sendMessage(body []byte) {
 	if err != nil {
 		fmt.Println(err)
 	}
-	fmt.Println(body)
+	fmt.Println(string(body))
 }
 
 func (rmq rabbitmq) ListenMessage() {

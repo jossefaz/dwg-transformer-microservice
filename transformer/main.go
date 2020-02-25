@@ -2,8 +2,8 @@ package main
 
 import (
 	"os"
-	"src/worker/config"
-	"src/worker/queue"
+	"dwg.transformer/main/lib/config"
+	"dwg.transformer/main/lib/queue"
 )
 
 func main() {
@@ -13,4 +13,3 @@ func main() {
 	defer rmqConn.ChanL.Close()
 	rmqConn.ListenMessage()
 }
-

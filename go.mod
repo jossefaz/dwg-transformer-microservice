@@ -1,4 +1,4 @@
-module src/transformer
+module dwg.transformer/main
 
 go 1.13
 
