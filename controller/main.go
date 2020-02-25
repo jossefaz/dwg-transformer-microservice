@@ -3,6 +3,8 @@ package main
 import (
 	"controller/config"
 	"encoding/json"
+	"fmt"
+	"github.com/streadway/amqp"
 	"github.com/yossefazoulay/go_utils/queue"
 	"github.com/yossefazoulay/go_utils/utils"
 	"os"
@@ -26,7 +28,9 @@ func main() {
 		utils.HandleError(err, "Cannot decode JSON")
 		time.Sleep(time.Second)
 
-		rmqConn.SendMessage(message)
+		rmqConn.SendMessage(message, "ConvertDWG")
 	}
-	rmqConn.ListenMessage()
+	rmqConn.ListenMessage(func(m amqp.Delivery, q queue.Rabbitmq){
+		fmt.Println(m.Body)
+		}, "ConvertDWG")
 }
