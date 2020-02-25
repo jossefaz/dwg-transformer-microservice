@@ -1,11 +1,11 @@
 package main
 
 import (
-	"encoding/json"
-	"os"
 	"dwg.transformer/main/lib/config"
 	"dwg.transformer/main/lib/queue"
 	"dwg.transformer/main/lib/utils"
+	"encoding/json"
+	"os"
 	"time"
 )
 
