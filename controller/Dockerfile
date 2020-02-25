@@ -18,11 +18,10 @@ FROM alpine
 # Copy our static executable.
 WORKDIR /app
 
-RUN mkdir shared && \
-    mkdir -p config/files && \
+RUN mkdir shared config && \
     chmod 777 shared
 COPY --from=builder /go/bin/main .
-COPY ../lib/config/files/* ./config/files/
+COPY ./config/*.json ./config/
 # Run the hello binary.
 
-CMD ["./main", "prod"]
+CMD ["./main", "dev"]

@@ -48,10 +48,8 @@ RUN ldconfig
 WORKDIR /app
 
 RUN mkdir shared && \
-    mkdir -p config/files && \
     chmod 777 shared
 COPY --from=builder /go/bin/main .
-COPY /src/transformer/config/files/* ./config/files/
 # Run the hello binary.
 CMD ["./main", "prod"]
 

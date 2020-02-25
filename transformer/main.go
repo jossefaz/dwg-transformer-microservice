@@ -1,9 +1,9 @@
 package main
 
 import (
+	"transformer/config"
 	"os"
-	"dwg.transformer/main/lib/config"
-	"dwg.transformer/main/lib/queue"
+	"github.com/yossefazoulay/go_utils/queue"
 )
 
 func main() {
