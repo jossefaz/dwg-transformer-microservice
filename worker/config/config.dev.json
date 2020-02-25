@@ -2,9 +2,9 @@
   "Queue" : {
     "Rabbitmq" : {
       "ConnString" : "amqp://guest:guest@localhost:5672/",
-      "QueueNames" : {
-        "ConvertDWG" : "ConvertDWG"
-      }
+      "QueueNames" : [
+        "ConvertDWG", "CheckDWG"
+      ]
     }
   }
 }
