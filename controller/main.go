@@ -1,17 +1,17 @@
 package main
 
 import (
+	"controller/config"
 	"encoding/json"
 	"github.com/yossefazoulay/go_utils/queue"
 	"github.com/yossefazoulay/go_utils/utils"
-	"controller/config"
 	"os"
 	"time"
 )
 
 func main() {
 	configuration := config.GetConfig(os.Args[1])
-	rmqConn := queue.NewRabbit(configuration.Queue.Rabbitmq.ConnString, configuration.Queue.Rabbitmq.QueueNames.ConvertDWG)
+	rmqConn := queue.NewRabbit(configuration.Queue.Rabbitmq.ConnString, configuration.Queue.Rabbitmq.QueueNames)
 	defer rmqConn.Conn.Close()
 	defer rmqConn.ChanL.Close()
 	root := "./"

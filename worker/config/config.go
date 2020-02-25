@@ -8,10 +8,8 @@ import (
 type Configuration struct {
 	Queue struct {
 		Rabbitmq struct {
-			ConnString string `json:"ConnString"`
-			QueueNames struct {
-				ConvertDWG string `json:"ConvertDWG"`
-			} `json:"QueueNames"`
+			ConnString string   `json:"ConnString"`
+			QueueNames []string `json:"QueueNames"`
 		} `json:"Rabbitmq"`
 	} `json:"Queue"`
 }
