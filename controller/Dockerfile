@@ -6,10 +6,12 @@ FROM golang:alpine AS builder
 # Git is required for fetching the dependencies.
 RUN apk update && apk add --no-cache git
 WORKDIR $GOPATH/src/package/app/
-COPY . .
+COPY ./ ./
+COPY ../lib ./
+COPY ../go.mod ./
 # Fetch dependencies.
 # Using go get.
-RUN go get -d -v && \
+RUN go get -d -v ./... && \
     CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o /go/bin/main
 ############################
 # STEP 2 build a small image
