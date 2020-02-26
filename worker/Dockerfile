@@ -1,25 +1,34 @@
-############################
-# STEP 1 build executable binary
-############################
+FROM osgeo/gdal:alpine-normal-latest as base
+
+FROM base as builder
+
+ENV PYTHONUNBUFFERED=1
 
 
-FROM golang:alpine AS builder
-# Install git.
-# Git is required for fetching the dependencies.
-RUN apk update && apk add --no-cache git
-WORKDIR $GOPATH/src/package/app/
-COPY . .
-# Fetch dependencies.
-# Using go get.
 
-RUN go get -d -v && CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o /go/bin/main
+RUN echo "**** install Python ****" && \
+    apk add --no-cache python3 && \
+    if [ ! -e /usr/bin/python ]; then ln -sf python3 /usr/bin/python ; fi && \
+    \
+    apk --no-cache add --virtual .builddeps gcc gfortran musl-dev && \
+    echo "**** install pip ****" && \
+    python3 -m ensurepip && \
+    rm -r /usr/lib/python*/ensurepip && \
+    pip3 install --no-cache --upgrade pip setuptools wheel && \
+
+    if [ ! -e /usr/bin/pip ]; then ln -s pip3 /usr/bin/pip ; fi && \
+    apk del .builddeps     && rm -rf /root/.cache
 
 
-FROM bitnami/minideb:jessie
+FROM base
 
-RUN mkdir shared config && \
+WORKDIR /app
+RUN mkdir shared && \
     chmod 777 shared
-COPY --from=builder /go/bin/main .
-COPY ./config/*.json ./config/
-# Run the hello binary.
-CMD ["./main", "prod"]
+COPY requirements.txt /requirements.txt
+RUN     pip3 install -r /requirements.txt
+
+COPY main.py ./
+
+CMD ["python", "./main.py"]
+

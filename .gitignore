@@ -3,5 +3,5 @@ nohup.out
 controller/uploads/*
 uploads/*
 bin/*
-
+venv/
 .idea/
