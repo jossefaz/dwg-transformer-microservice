@@ -13,3 +13,4 @@ after_sucess :
     - docker push yossefazoulay/dwg-transformer
     - docker push yossefazoulay/dwg-nginx
     - docker push yossefazoulay/dwg-controller
+    - docker push yossefazoulay/dwg-worker

@@ -5,23 +5,19 @@ services :
     ports:
       - 5672:5672
       - 15672:15672
-    healthcheck:
-        test: ["CMD", "curl", "-f", "http://localhost:5672"]
-        interval: 30s
-        timeout: 10s
-        retries: 5
+
   controller :
-    depends_on : 
+    depends_on :
       - rabbitmq
-    build : 
+    build :
       context : ./controller
     restart: on-failure
     volumes:
       - ./uploads:/app/shared
   transformer :
-    depends_on : 
+    depends_on :
       - rabbitmq
-    build : 
+    build :
       context : ./transformer
     restart: on-failure
     volumes:
