@@ -47,4 +47,15 @@ spec:
   selector:
     app: dwg-queue
     component: rabbitmq
+
+---
+apiVersion : v1
+kind : Service
+metadata :
+  name : controller
+spec :
+  selector :
+    app : dwg-controller
+  type : ClusterIP
+---
     

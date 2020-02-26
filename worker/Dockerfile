@@ -1,3 +1,15 @@
+FROM golang:alpine AS gobuilder
+# Install git.
+# Git is required for fetching the dependencies.
+RUN apk update && apk add --no-cache git
+WORKDIR $GOPATH/src/package/app/
+COPY ./listener .
+# Fetch dependencies.
+# Using go get.
+RUN go get -d -v ./... && \
+    CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o /go/bin/main
+
+
 FROM osgeo/gdal:alpine-normal-latest as base
 
 FROM base as builder
@@ -28,7 +40,10 @@ RUN mkdir shared && \
 COPY requirements.txt /requirements.txt
 RUN     pip3 install -r /requirements.txt
 
+COPY --from=gobuilder /go/bin/main .
+COPY ./listener/config/*.json ./config/
+
 COPY main.py ./
 
-CMD ["python", "./main.py"]
+CMD ["./main", "prod"]
 

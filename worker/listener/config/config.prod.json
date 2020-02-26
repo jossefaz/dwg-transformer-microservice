@@ -1,0 +1,10 @@
+{
+  "Queue" : {
+    "Rabbitmq" : {
+      "ConnString" : "amqp://guest:guest@rabbitmq/",
+      "QueueNames" : [
+        "ConvertDWG", "CheckDWG"
+      ]
+    }
+  }
+}

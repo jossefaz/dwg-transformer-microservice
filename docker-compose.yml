@@ -3,9 +3,12 @@ services :
   rabbitmq:
     image: rabbitmq:management
     ports:
-      - 5672:5672
       - 15672:15672
-
+    healthcheck:
+        test: ["CMD", "curl", "-f", "http://localhost:5672"]
+        interval: 30s
+        timeout: 10s
+        retries: 5
   controller :
     depends_on :
       - rabbitmq

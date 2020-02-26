@@ -22,7 +22,11 @@ func MessageReceiver(m amqp.Delivery, rmq queue.Rabbitmq)  {
 		if err != nil {
 			rmq.SendMessage([]byte("DWG CONVERSION FAILED"), "ConvertDWG")
 		}
-		rmq.SendMessage([]byte("FILE CONVERTED SUCCESSFULLY"), "CheckDWG")
+		message, err := json.Marshal(globalUtils.PickFile{
+			Name: "File Uploaded",
+			Path: outpath,
+		})
+		rmq.SendMessage(message, "CheckDWG")
 		fmt.Println(string(out))
 	}
 }
