@@ -4,7 +4,20 @@
       "ConnString" : "amqp://guest:guest@rabbitmq/",
       "QueueNames" : [
         "ConvertDWG", "CheckDWG"
-      ]
+      ],
+      "Listennig" : [
+        "ConvertDWG"
+      ],
+      "Result" : {
+        "Success" : "ConvertDWG",
+        "Fail" : "ConvertDWG",
+        "From" : "Transformer"
+      }
     }
+  },
+  "OutputFormat" : "GeoJSON",
+  "FileExtensions" : {
+    "GeoJSON" : ".json",
+    "dxf" : ".dxf"
   }
 }

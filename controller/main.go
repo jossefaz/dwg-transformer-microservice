@@ -12,8 +12,8 @@ import (
 )
 
 func main() {
-	configuration := config.GetConfig(os.Args[1])
-	rmqConn := queue.NewRabbit(configuration.Queue.Rabbitmq.ConnString, configuration.Queue.Rabbitmq.QueueNames)
+	config.GetConfig(os.Args[1])
+	rmqConn := queue.NewRabbit(config.LocalConfig.Queue.Rabbitmq.ConnString, config.LocalConfig.Queue.Rabbitmq.QueueNames)
 	defer rmqConn.Conn.Close()
 	defer rmqConn.ChanL.Close()
 	root := "./"
@@ -22,15 +22,19 @@ func main() {
 	for _, file := range files {
 
 		message, err := json.Marshal(utils.PickFile{
-			Name: "File Uploaded",
 			Path: file,
+			Result : map[string]int{
+				"Transform" : 0,
+			},
+			From : "controller",
 		})
 		utils.HandleError(err, "Cannot decode JSON")
 		time.Sleep(time.Second)
 
 		rmqConn.SendMessage(message, "ConvertDWG")
 	}
-	rmqConn.ListenMessage(func(m amqp.Delivery, q queue.Rabbitmq){
+	rmqConn.OpenListening(config.LocalConfig.Queue.Rabbitmq.QueueNames, func(m amqp.Delivery, q queue.Rabbitmq){
 		fmt.Println(m.Body)
-		}, "ConvertDWG")
+	})
+
 }

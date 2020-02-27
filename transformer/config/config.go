@@ -5,23 +5,34 @@ import (
 	"github.com/yossefazoulay/go_utils/utils"
 )
 
+var LocalConfig Configuration
+
+
+
 type Configuration struct {
 	Queue struct {
 		Rabbitmq struct {
 			ConnString string   `json:"ConnString"`
 			QueueNames []string `json:"QueueNames"`
+			Listennig  []string `json:"Listennig"`
+			Result    utils.Result
 		} `json:"Rabbitmq"`
 	} `json:"Queue"`
+	OutputFormat   string
+	FileExtensions map[string]string
+}
+var configEnv = map[string]string{
+	"dev" : "./config/config.dev.json",
+	"prod" : "./config/config.prod.json",
 }
 
-var configEnv = make(map[string]string)
 
-func GetConfig(env string )  Configuration {
-	configEnv["dev"] = "./config/config.dev.json"
-	configEnv["prod"] = "./config/config.prod.json"
+func GetConfig(env string, output string ) {
 	configuration := Configuration{}
 	err := gonfig.GetConf(configEnv[env], &configuration)
 	utils.HandleError(err, "Cannot load/read config file")
-	return configuration
+	LocalConfig = configuration
+	LocalConfig.OutputFormat = output
 }
+
 

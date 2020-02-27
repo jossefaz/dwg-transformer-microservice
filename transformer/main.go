@@ -1,19 +1,22 @@
 package main
 
 import (
+	"os"
 	"transformer/config"
 	"transformer/utils"
-	"os"
 	"github.com/yossefazoulay/go_utils/queue"
 
 )
 
 func main() {
 
-	configuration := config.GetConfig(os.Args[1])
-	rmqConn := queue.NewRabbit(configuration.Queue.Rabbitmq.ConnString, configuration.Queue.Rabbitmq.QueueNames)
+	config.GetConfig(os.Args[1], os.Args[2])
+	queueConf := config.LocalConfig.Queue.Rabbitmq
+	rmqConn := queue.NewRabbit(queueConf.ConnString, queueConf.QueueNames)
 	defer rmqConn.Conn.Close()
 	defer rmqConn.ChanL.Close()
-	rmqConn.ListenMessage(utils.MessageReceiver, "ConvertDWG")
-	rmqConn.ListenMessage(utils.MessageReceiver, "CheckDWG")
+	rmqConn.OpenListening(queueConf.Listennig, utils.MessageReceiver)
+
 }
+
+
