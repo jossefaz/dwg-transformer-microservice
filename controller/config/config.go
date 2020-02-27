@@ -12,6 +12,7 @@ type Configuration struct {
 		Rabbitmq struct {
 			ConnString string   `json:"ConnString"`
 			QueueNames []string `json:"QueueNames"`
+			Listennig  []string `json:"Listennig"`
 		} `json:"Rabbitmq"`
 	} `json:"Queue"`
 }

@@ -20,6 +20,7 @@ func MessageReceiver(m amqp.Delivery, rmq queue.Rabbitmq)  {
 		if err != nil {
 			globalUtils.HandleError(err, "Error decoding message")
 		}
+		rmq.SendMessage([]byte("WORKER WORKED"), "CheckedDWG")
 		fmt.Println(string(out))
 	}
 }

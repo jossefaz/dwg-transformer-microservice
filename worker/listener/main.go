@@ -9,9 +9,9 @@ import (
 )
 
 func main() {
-	configuration := config.GetConfig(os.Args[1])
-	rmqConn := queue.NewRabbit(configuration.Queue.Rabbitmq.ConnString, configuration.Queue.Rabbitmq.QueueNames)
+	config.GetConfig(os.Args[1])
+	rmqConn := queue.NewRabbit(config.LocalConfig.Queue.Rabbitmq.ConnString, config.LocalConfig.Queue.Rabbitmq.QueueNames)
 	defer rmqConn.Conn.Close()
 	defer rmqConn.ChanL.Close()
-	rmqConn.ListenMessage(utils.MessageReceiver, "CheckDWG")
+	rmqConn.OpenListening(config.LocalConfig.Queue.Rabbitmq.Listennig, utils.MessageReceiver)
 }

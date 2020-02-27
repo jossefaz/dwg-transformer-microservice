@@ -3,14 +3,14 @@
     "Rabbitmq" : {
       "ConnString" : "amqp://guest:guest@rabbitmq/",
       "QueueNames" : [
-        "ConvertDWG", "CheckDWG"
+        "ConvertDWG", "ConvertedDWG"
       ],
       "Listennig" : [
         "ConvertDWG"
       ],
       "Result" : {
-        "Success" : "ConvertDWG",
-        "Fail" : "ConvertDWG",
+        "Success" : "ConvertedDWG",
+        "Fail" : "ConvertedDWG",
         "From" : "Transformer"
       }
     }
