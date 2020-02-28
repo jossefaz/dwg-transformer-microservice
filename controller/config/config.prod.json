@@ -1,7 +1,7 @@
 {
   "Queue" : {
     "Rabbitmq" : {
-      "ConnString" : "amqp://guest:guest@rabbitmq/",
+      "ConnString" : "amqp://guest:guest@rabbitmq?connection_attempts=5&retry_delay=5",
       "QueueNames" : [
         "ConvertedDWG", "CheckedDWG", "ConvertDWG", "CheckDWG"
       ],

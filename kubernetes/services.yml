@@ -1,26 +1,10 @@
 apiVersion : v1
 kind : Service
 metadata : 
-    name : server 
-spec :
-    selector :
-        app : dwg-nginx
-    ports :
-        - name : server-http
-          port : 80
-          nodePort : 30080
-    type : NodePort
----
-apiVersion : v1
-kind : Service
-metadata : 
     name : controller
 spec :
     selector :
         app : dwg-controller
-    ports :
-        - name : controller-http
-          port : 3030
     type : ClusterIP
 ---
 apiVersion : v1
@@ -30,9 +14,6 @@ metadata :
 spec :
     selector :
         app : dwg-transformer
-    ports :
-        - name : transformer-http
-          port : 8090
     type : ClusterIP
 ---
 apiVersion: v1
@@ -52,10 +33,10 @@ spec:
 apiVersion : v1
 kind : Service
 metadata :
-  name : controller
+  name : worker
 spec :
   selector :
-    app : dwg-controller
+    app : dwg-worker
   type : ClusterIP
 ---
     

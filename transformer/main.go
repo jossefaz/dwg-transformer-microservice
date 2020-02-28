@@ -1,11 +1,10 @@
 package main
 
 import (
+	"github.com/yossefazoulay/go_utils/queue"
 	"os"
 	"transformer/config"
 	"transformer/utils"
-	"github.com/yossefazoulay/go_utils/queue"
-
 )
 
 func main() {
@@ -15,7 +14,8 @@ func main() {
 	rmqConn := queue.NewRabbit(queueConf.ConnString, queueConf.QueueNames)
 	defer rmqConn.Conn.Close()
 	defer rmqConn.ChanL.Close()
-	rmqConn.OpenListening(queueConf.Listennig, utils.MessageReceiver)
+	//rmqConn.OpenListening(queueConf.Listennig, utils.MessageReceiver)
+	rmqConn.ListenMessage(utils.MessageReceiver, config.LocalConfig.Queue.Rabbitmq.Listennig[0])
 
 }
 

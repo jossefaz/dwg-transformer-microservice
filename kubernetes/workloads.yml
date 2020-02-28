@@ -16,30 +16,30 @@
 #                - name : dwg-nginx
 #                  image : yossefazoulay/dwg-nginx
 #
-#---
-#
-#apiVersion : apps/v1
-#kind : Deployment
-#metadata :
-#    name : dwg-controller
-#spec :
-#    selector :
-#        matchLabels :
-#            app : dwg-controller
-#    replicas : 1
-#    template :
-#        metadata :
-#            labels :
-#                app : dwg-controller
-#        spec :
-#            containers :
-#                - name : dwg-controller
-#                  image : yossefazoulay/dwg-controller
-#            volumes :
-#                - name : dwg-persistent-storage
-#                  persistentVolumeClaim :
-#                    claimName : dwg-pvc
-#---
+---
+
+apiVersion : apps/v1
+kind : Deployment
+metadata :
+    name : dwg-controller
+spec :
+    selector :
+        matchLabels :
+            app : dwg-controller
+    replicas : 1
+    template :
+        metadata :
+            labels :
+                app : dwg-controller
+        spec :
+            containers :
+                - name : dwg-controller
+                  image : yossefazoulay/dwg-controller
+            volumes :
+                - name : dwg-persistent-storage
+                  persistentVolumeClaim :
+                    claimName : dwg-pvc
+---
 apiVersion : apps/v1
 kind : Deployment
 metadata :
