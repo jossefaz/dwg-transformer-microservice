@@ -14,13 +14,13 @@ func MessageReceiver(m amqp.Delivery, rmq queue.Rabbitmq)  {
 		fmt.Printf("Error acknowledging message : %s", err)
 	} else {
 		pFIle := &globalUtils.PickFile{}
-		err := json.Unmarshal(m.Body, pFIle)
+		globalUtils.HandleError(
+			json.Unmarshal(m.Body, pFIle), "Error decoding message in worker")
 		cmd := exec.Command("python", "main.py", pFIle.Path)
-		out, err := cmd.CombinedOutput()
+		err = cmd.Run()
 		if err != nil {
-			globalUtils.HandleError(err, "Error decoding message")
+			rmq.SendMessage([]byte("WORKER WORKED"), "CheckedDWG")
 		}
 		rmq.SendMessage([]byte("WORKER WORKED"), "CheckedDWG")
-		fmt.Println(string(out))
 	}
 }

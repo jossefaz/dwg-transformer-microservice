@@ -9,9 +9,9 @@ import (
 
 func main() {
 	config.GetConfig(os.Args[1])
-	rmqConn := queue.NewRabbit(config.LocalConfig.Queue.Rabbitmq.ConnString, config.LocalConfig.Queue.Rabbitmq.QueueNames)
+	queueConf := config.LocalConfig.Queue.Rabbitmq
+	rmqConn := queue.NewRabbit(queueConf.ConnString, queueConf.QueueNames)
 	defer rmqConn.Conn.Close()
 	defer rmqConn.ChanL.Close()
-	//rmqConn.OpenListening(config.LocalConfig.Queue.Rabbitmq.Listennig, utils.MessageReceiver)
-	rmqConn.ListenMessage(utils.MessageReceiver, config.LocalConfig.Queue.Rabbitmq.Listennig[0])
+	rmqConn.OpenListening(queueConf.Listennig, utils.MessageReceiver)
 }

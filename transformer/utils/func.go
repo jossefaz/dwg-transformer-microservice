@@ -24,7 +24,6 @@ func MessageReceiver(m amqp.Delivery, rmq queue.Rabbitmq)  {
 			rmq.SendMessage(res, resultConfig.Success)
 		}
 	}
-
 }
 
 func getResultConfig() globalUtils.Result {
@@ -35,7 +34,7 @@ func execute(pfile *globalUtils.PickFile, output string) []byte{
 	resultConfig := getResultConfig()
 	outpath := getOutputPath(pfile.Path, output)
 	cmd := exec.Command("dwgread", pfile.Path, "-O", output, "-o", outpath)
-	_, err := cmd.CombinedOutput()
+	err := cmd.Run()
 	if err != nil {
 		return globalUtils.SetResultMessage(pfile, []string{"Transform"}, []int {0},  resultConfig.From, pfile.Path)
 	}
