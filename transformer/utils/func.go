@@ -2,7 +2,6 @@ package utils
 
 import (
 	"encoding/json"
-	"fmt"
 	"github.com/streadway/amqp"
 	"github.com/yossefazoulay/go_utils/queue"
 	globalUtils "github.com/yossefazoulay/go_utils/utils"
@@ -13,12 +12,13 @@ import (
 
 func MessageReceiver(m amqp.Delivery, rmq queue.Rabbitmq)  {
 	resultConfig := getResultConfig()
+	log := config.Logger.Log
 	pFIle := &globalUtils.PickFile{}
 	err := json.Unmarshal(m.Body, pFIle)
 	globalUtils.HandleError(err, "Error decoding message", config.Logger)
 	if pFIle.From !=  resultConfig.From{
 		if err := m.Ack(false); err != nil {
-			fmt.Printf("Error acknowledging message : %s", err)
+			log.Error("Error acknowledging message : %s", err)
 		} else {
 			res:= execute(pFIle, config.LocalConfig.OutputFormat)
 			rmq.SendMessage(res, resultConfig.Success)

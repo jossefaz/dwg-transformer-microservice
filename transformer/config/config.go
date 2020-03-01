@@ -7,7 +7,7 @@ import (
 )
 
 var LocalConfig Configuration
-var Logger logs.Logger
+var Logger utils.Logger
 
 
 type Configuration struct {
