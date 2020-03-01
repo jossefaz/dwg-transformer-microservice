@@ -8,6 +8,7 @@ import (
 )
 
 func main() {
+
 	config.GetConfig(os.Args[1])
 	queueConf := config.LocalConfig.Queue.Rabbitmq
 	rmqConn := queue.NewRabbit(queueConf.ConnString, queueConf.QueueNames)

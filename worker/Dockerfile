@@ -35,7 +35,7 @@ RUN echo "**** install Python ****" && \
 FROM base
 
 WORKDIR /app
-RUN mkdir shared && \
+RUN mkdir -p shared/logs config && \
     chmod 777 shared
 COPY requirements.txt /requirements.txt
 RUN     pip3 install -r /requirements.txt

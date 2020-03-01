@@ -36,3 +36,14 @@ func convertMapToString(customMap map[string]int) string {
 	return b.String()
 
 }
+
+func convertMapKeysToString(customMap map[string]int) string {
+	var b bytes.Buffer
+
+	for k,_ := range customMap {
+		s := fmt.Sprintf("%s ", k)
+		b.WriteString(s)
+	}
+	return b.String()
+
+}

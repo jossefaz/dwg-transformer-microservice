@@ -19,5 +19,11 @@
   "FileExtensions" : {
     "GeoJSON" : ".json",
     "dxf" : ".dxf"
+  },
+  "Logs" : {
+    "Main" : {
+      "Path" : "shared/logs/transformer.log",
+      "Level" : "DEBUG"
+    }
   }
 }

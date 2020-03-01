@@ -47,7 +47,7 @@ RUN ldconfig
 
 WORKDIR /app
 
-RUN mkdir shared config && \
+RUN mkdir -p shared/logs config && \
     chmod 777 shared
 COPY --from=builder /go/bin/main .
 COPY ./config/*.json ./config/

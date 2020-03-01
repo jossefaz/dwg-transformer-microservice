@@ -9,5 +9,11 @@
         "ConvertedDWG", "CheckedDWG"
       ]
     }
+  },
+  "Logs" : {
+      "Main" : {
+        "Path" : "shared/logs/controller.log",
+        "Level" : "DEBUG"
+      }
   }
 }

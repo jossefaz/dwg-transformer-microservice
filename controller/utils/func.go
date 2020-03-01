@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"controller/config"
 	"encoding/json"
 	"fmt"
 	"github.com/streadway/amqp"
@@ -12,11 +13,12 @@ import (
 
 
 func MessageReceiver(m amqp.Delivery, rmq queue.Rabbitmq)  {
+	log := config.Logger.Log
 	pFIle := &globalUtils.PickFile{}
 	err := json.Unmarshal(m.Body, pFIle)
 	globalUtils.HandleError(err, "test")
 	if err := m.Ack(false); err != nil {
-		fmt.Printf("Error acknowledging message : %s", err)
+		log.Error("Error acknowledging message : %s", err)
 	}
 	if pFIle.From == "Transformer" {
 		getMessageFromTransformer(pFIle, rmq)

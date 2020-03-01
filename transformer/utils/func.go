@@ -15,7 +15,7 @@ func MessageReceiver(m amqp.Delivery, rmq queue.Rabbitmq)  {
 	resultConfig := getResultConfig()
 	pFIle := &globalUtils.PickFile{}
 	err := json.Unmarshal(m.Body, pFIle)
-	globalUtils.HandleError(err, "Error decoding message")
+	globalUtils.HandleError(err, "Error decoding message", config.Logger)
 	if pFIle.From !=  resultConfig.From{
 		if err := m.Ack(false); err != nil {
 			fmt.Printf("Error acknowledging message : %s", err)
@@ -36,10 +36,23 @@ func execute(pfile *globalUtils.PickFile, output string) []byte{
 	cmd := exec.Command("dwgread", pfile.Path, "-O", output, "-o", outpath)
 	err := cmd.Run()
 	if err != nil {
-		return globalUtils.SetResultMessage(pfile, []string{"Transform"}, []int {0},  resultConfig.From, pfile.Path)
+		return setResult(pfile, pfile.Path, resultConfig.From, true)
 	}
-	return globalUtils.SetResultMessage(pfile, []string{"Transform"}, []int {1},  resultConfig.From, outpath)
+	return setResult(pfile, outpath, resultConfig.From, false)
 }
+
+func setResult(pfile *globalUtils.PickFile, path string, from string, error bool)[]byte {
+	execRes := 1
+	if error {
+		execRes = 0
+	}
+	mess, err := globalUtils.SetResultMessage(pfile, []string{"Transform"}, []int {execRes},  from, path)
+	if err != nil {
+		globalUtils.HandleError(err, "Cannot set output and cannot run command :" + err.Error() + err.Error(), config.Logger)
+	}
+	return mess
+	}
+
 
 func getOutputPath(basePath string, output string) string {
 	fileExt := config.LocalConfig.FileExtensions[output]
