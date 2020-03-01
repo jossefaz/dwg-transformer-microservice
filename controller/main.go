@@ -13,9 +13,6 @@ func main() {
 	rmqConn := queue.NewRabbit(queueConf.ConnString, queueConf.QueueNames)
 	defer rmqConn.Conn.Close()
 	defer rmqConn.ChanL.Close()
-	rmqConn.OpenListening(queueConf.Listennig, utils.MessageReceiver)
 	utils.MockData(rmqConn)
-
-
-
+	rmqConn.OpenListening(queueConf.Listennig, utils.MessageReceiver)
 }

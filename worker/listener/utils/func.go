@@ -19,7 +19,7 @@ func MessageReceiver(m amqp.Delivery, rmq queue.Rabbitmq)  {
 		cmd := exec.Command("python", "main.py", pFIle.Path)
 		err = cmd.Run()
 		if err != nil {
-			rmq.SendMessage([]byte("WORKER WORKED"), "CheckedDWG")
+			rmq.SendMessage([]byte("WORKER DOES NOT WORKED"), "CheckedDWG")
 		}
 		rmq.SendMessage([]byte("WORKER WORKED"), "CheckedDWG")
 	}
