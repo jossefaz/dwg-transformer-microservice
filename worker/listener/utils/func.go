@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"github.com/streadway/amqp"
@@ -16,11 +17,22 @@ func MessageReceiver(m amqp.Delivery, rmq queue.Rabbitmq)  {
 		pFIle := &globalUtils.PickFile{}
 		globalUtils.HandleError(
 			json.Unmarshal(m.Body, pFIle), "Error decoding message in worker")
-		cmd := exec.Command("python", "main.py", pFIle.Path)
+		cmd := exec.Command("python", "main.py", pFIle.Path, convertMapToString(pFIle.Result))
 		err = cmd.Run()
 		if err != nil {
 			rmq.SendMessage([]byte("WORKER DOES NOT WORKED"), "CheckedDWG")
 		}
 		rmq.SendMessage([]byte("WORKER WORKED"), "CheckedDWG")
 	}
+}
+
+func convertMapToString(customMap map[string]int) string {
+	var b bytes.Buffer
+
+	for k,v := range customMap {
+		s := fmt.Sprintf("%s=\"%v\"", k, v)
+		b.WriteString(s)
+	}
+	return b.String()
+
 }
