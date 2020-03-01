@@ -16,7 +16,7 @@ func MessageReceiver(m amqp.Delivery, rmq queue.Rabbitmq)  {
 	log := config.Logger.Log
 	pFIle := &globalUtils.PickFile{}
 	err := json.Unmarshal(m.Body, pFIle)
-	globalUtils.HandleError(err, "Unable to convert message to json", log)
+	globalUtils.HandleError(err, "Unable to convert message to json", config.Logger)
 	if err := m.Ack(false); err != nil {
 		log.Error("Error acknowledging message : %s", err)
 	}

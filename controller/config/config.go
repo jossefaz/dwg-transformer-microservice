@@ -2,8 +2,8 @@ package config
 
 import (
 	"github.com/tkanos/gonfig"
-	"github.com/yossefazoulay/go_utils/utils"
 	"github.com/yossefazoulay/go_utils/logs"
+	"github.com/yossefazoulay/go_utils/utils"
 )
 
 
@@ -34,8 +34,9 @@ var Logger utils.Logger
 func GetConfig(env string) {
 	configuration := Configuration{}
 	err := gonfig.GetConf(configEnv[env], &configuration)
-	utils.HandleError(err, "Cannot load/read config file")
-	LocalConfig = configuration
 	Logger = logs.InitLogs(LocalConfig.Logs.Main.Path, LocalConfig.Logs.Main.Level)
+	utils.HandleError(err, "Cannot load/read config file", Logger)
+	LocalConfig = configuration
+
 }
 

@@ -7,6 +7,7 @@ import (
 	"github.com/streadway/amqp"
 	"github.com/yossefazoulay/go_utils/queue"
 	globalUtils "github.com/yossefazoulay/go_utils/utils"
+	"listener/config"
 	"os/exec"
 )
 
@@ -16,7 +17,7 @@ func MessageReceiver(m amqp.Delivery, rmq queue.Rabbitmq)  {
 	} else {
 		pFIle := &globalUtils.PickFile{}
 		globalUtils.HandleError(
-			json.Unmarshal(m.Body, pFIle), "Error decoding message in worker")
+			json.Unmarshal(m.Body, pFIle), "Error decoding message in worker", config.Logger)
 		cmd := exec.Command("python", "main.py", pFIle.Path, convertMapToString(pFIle.Result))
 		err = cmd.Run()
 		if err != nil {
@@ -40,7 +41,7 @@ func convertMapToString(customMap map[string]int) string {
 func convertMapKeysToString(customMap map[string]int) string {
 	var b bytes.Buffer
 
-	for k,_ := range customMap {
+	for k := range customMap {
 		s := fmt.Sprintf("%s ", k)
 		b.WriteString(s)
 	}

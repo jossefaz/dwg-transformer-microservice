@@ -63,7 +63,7 @@ spec :
                     claimName : dwg-pvc
 ---
 apiVersion: v1
-kind: ReplicationController
+kind: Deplpoyment
 metadata:
   labels:
     app: dwg-queue-controller
