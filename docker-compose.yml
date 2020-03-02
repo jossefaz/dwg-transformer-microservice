@@ -5,16 +5,14 @@ services :
   controller :
     depends_on :
       - rabbitmq
-    build:
-      context: controller
+    image : yossefazoulay/dwg-controller
     restart: on-failure
     volumes:
       - ./uploads:/app/shared
   transformer :
     depends_on :
       - rabbitmq
-    build:
-      context: ./transformer
+    image: yossefazoulay/dwg-transformer
     restart: on-failure
     volumes:
       - ./uploads:/app/shared
