@@ -22,7 +22,7 @@
   },
   "Logs" : {
     "Main" : {
-      "Path" : "./shared/transformer.log",
+      "Path" : "/shared/transformer.log",
       "Level" : "DEBUG"
     }
   }
