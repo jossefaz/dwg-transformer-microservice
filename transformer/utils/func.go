@@ -15,7 +15,7 @@ func MessageReceiver(m amqp.Delivery, rmq queue.Rabbitmq)  {
 	log := config.Logger.Log
 	pFIle := &globalUtils.PickFile{}
 	err := json.Unmarshal(m.Body, pFIle)
-	globalUtils.HandleError(err, "Error decoding message", config.Logger)
+	globalUtils.HandleError(err, "Error decoding message", &config.Logger)
 	if pFIle.From !=  resultConfig.From{
 		if err := m.Ack(false); err != nil {
 			log.Error("Error acknowledging message : %s", err)
@@ -48,7 +48,7 @@ func setResult(pfile *globalUtils.PickFile, path string, from string, error bool
 	}
 	mess, err := globalUtils.SetResultMessage(pfile, []string{"Transform"}, []int {execRes},  from, path)
 	if err != nil {
-		globalUtils.HandleError(err, "Cannot set output and cannot run command :" + err.Error() + err.Error(), config.Logger)
+		globalUtils.HandleError(err, "Cannot set output and cannot run command :" + err.Error() + err.Error(), &config.Logger)
 	}
 	return mess
 	}

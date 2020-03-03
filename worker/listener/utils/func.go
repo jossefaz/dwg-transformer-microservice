@@ -17,7 +17,7 @@ func MessageReceiver(m amqp.Delivery, rmq queue.Rabbitmq)  {
 	} else {
 		pFIle := &globalUtils.PickFile{}
 		globalUtils.HandleError(
-			json.Unmarshal(m.Body, pFIle), "Error decoding message in worker", config.Logger)
+			json.Unmarshal(m.Body, pFIle), "Error decoding message in worker", &config.Logger)
 		cmd := exec.Command("python", "main.py", pFIle.Path, convertMapToString(pFIle.Result))
 		err = cmd.Run()
 		if err != nil {

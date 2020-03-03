@@ -16,7 +16,7 @@ func MessageReceiver(m amqp.Delivery, rmq queue.Rabbitmq)  {
 	log := config.Logger.Log
 	pFIle := &globalUtils.PickFile{}
 	err := json.Unmarshal(m.Body, pFIle)
-	globalUtils.HandleError(err, "Unable to convert message to json", config.Logger)
+	globalUtils.HandleError(err, "Unable to convert message to json", &config.Logger)
 	if err := m.Ack(false); err != nil {
 		log.Error("Error acknowledging message : %s", err)
 	}
@@ -36,7 +36,7 @@ func getMessageFromTransformer(pFIle *globalUtils.PickFile, rmq queue.Rabbitmq) 
 			"InsideJer" : 0,
 		}
 		mess, err := json.Marshal(pFIle)
-		globalUtils.HandleError(err, "cannot convert transformed pFile to Json", config.Logger)
+		globalUtils.HandleError(err, "cannot convert transformed pFile to Json", &config.Logger)
 		rmq.SendMessage(mess, "CheckDWG")
 	} else if pFIle.Result["Transform"] == 0 {
 		log.Error("The transformer did not sucess to transfor this file : " , pFIle.Path)
@@ -58,7 +58,7 @@ func MockData(rmqConn queue.Rabbitmq) {
 			},
 			From : "controller",
 		})
-		globalUtils.HandleError(err, "Cannot encode JSON", config.Logger)
+		globalUtils.HandleError(err, "Cannot encode JSON", &config.Logger)
 		time.Sleep(time.Microsecond)
 		rmqConn.SendMessage(message, "ConvertDWG")
 	}
