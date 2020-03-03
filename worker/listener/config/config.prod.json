@@ -11,7 +11,7 @@
     },
     "Logs" : {
       "Main" : {
-        "Path" : "/shared/worker.log",
+        "Path" : "shared/worker.log",
         "Level" : "DEBUG"
       }
     }
