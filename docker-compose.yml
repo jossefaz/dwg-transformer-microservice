@@ -1,30 +1,29 @@
 version : '3'
 services :
-#  rabbitmq:
-#    image: rabbitmq
+  rabbitmq:
+    image: rabbitmq
   controller :
-#    depends_on :
-#      - rabbitmq
-    build:
-      context: ./controller
+    depends_on :
+      - rabbitmq
+    image: yossefazoulay/dwg-controller
     restart: on-failure
     volumes:
       - ./uploads:/app/shared
-#  transformer :
-#    depends_on :
-#      - rabbitmq
-#    image: yossefazoulay/dwg-transformer
-#    restart: on-failure
-#    volumes:
-#      - ./uploads:/app/shared
-#
-#  worker:
-#    depends_on:
-#      - rabbitmq
-#    image: yossefazoulay/dwg-worker
-#    restart: on-failure
-#    volumes:
-#      - ./uploads:/app/shared
+  transformer :
+    depends_on :
+      - rabbitmq
+    image: yossefazoulay/dwg-transformer
+    restart: on-failure
+    volumes:
+      - ./uploads:/app/shared
+
+  worker:
+    depends_on:
+      - rabbitmq
+    image: yossefazoulay/dwg-worker
+    restart: on-failure
+    volumes:
+      - ./uploads:/app/shared
 
   
 

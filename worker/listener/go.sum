@@ -13,6 +13,7 @@ github.com/tkanos/gonfig v0.0.0-20181112185242-896f3d81fadf h1:sepG1nOX39NO8y8E+
 github.com/tkanos/gonfig v0.0.0-20181112185242-896f3d81fadf/go.mod h1:DaZPBuToMc2eezA9R9nDAnmS2RMwL7yEa5YD36ESQdI=
 github.com/yossefazoulay/go_utils v0.0.0-20200301171324-2ff51a3dbb56 h1:68aGedCxbGKwt6m7SKykDcHQXfvq1CRTKZzfbwLJsD8=
 github.com/yossefazoulay/go_utils v0.0.0-20200301171324-2ff51a3dbb56/go.mod h1:ucV4wyWrZXmLM1Y8J/xEjYE1Ho7kt+wYNwWEx4vL13E=
+github.com/yossefazoulay/go_utils v0.0.0-20200303080218-d5610315fc15/go.mod h1:ucV4wyWrZXmLM1Y8J/xEjYE1Ho7kt+wYNwWEx4vL13E=
 golang.org/x/sys v0.0.0-20190422165155-953cdadca894 h1:Cz4ceDQGXuKRnVBDTS23GTn/pU5OE2C0WrNTOYK1Uuc=
 golang.org/x/sys v0.0.0-20190422165155-953cdadca894/go.mod h1:h1NjWce9XRLGQEsW7wpKNCjG9DtNlClVuFLEZdDNbEs=
 gopkg.in/check.v1 v0.0.0-20161208181325-20d25e280405/go.mod h1:Co6ibVJAznAaIkqp8huTwlJQCZ016jof/cbN4VW5Yz0=
