@@ -27,19 +27,10 @@ func MessageReceiver(m amqp.Delivery, rmq queue.Rabbitmq)  {
 	} else {
 		pFIle := &globalUtils.PickFile{}
 		HandleError(json.Unmarshal(m.Body, pFIle), "Error decoding message in worker",false)
-		cmd := exec.Command("python", "main.py", pFIle.Path, convertMapToString(pFIle.Result))
-		err = cmd.Run()
-		if err != nil {
-			mess, err1 :=rmq.SendMessage([]byte("WORKER DOES NOT WORKED"), "CheckedDWG")
-			HandleError(err1, "message sending error", false)
-			config.Logger.Log.Error(fmt.Sprintf(mess, err))
-		} else {
-			mess, err1 :=rmq.SendMessage([]byte("WORKER WORKED"), "CheckedDWG")
-			HandleError(err1, "message sending error", false)
-			config.Logger.Log.Info(mess)
-		}
-
-
+		res:= execute(pFIle)
+		mess, err1 :=rmq.SendMessage(res, "CheckedDWG")
+		HandleError(err1, "message sending error", false)
+		config.Logger.Log.Error(fmt.Sprintf(mess, err))
 	}
 }
 
@@ -63,4 +54,29 @@ func convertMapKeysToString(customMap map[string]int) string {
 	}
 	return b.String()
 
+}
+
+func setResult(pfile *globalUtils.PickFile, path string, from string, to string, result[]int)[]byte {
+
+	keys := make([]string, 0, len(pfile.Result))
+	for k := range pfile.Result {
+		keys = append(keys, k)
+	}
+	mess, err := globalUtils.SetResultMessage(pfile, keys, result,  from, to, path)
+	if err != nil {
+		HandleError(err, "Cannot set output and cannot run command :" + err.Error() + err.Error(), false)
+	}
+	return mess
+}
+func getResultConfig() globalUtils.Result {
+	return config.LocalConfig.Queue.Rabbitmq.Result
+}
+func execute(pfile *globalUtils.PickFile) []byte{
+	resultConfig := getResultConfig()
+	cmd := exec.Command("python", "main.py", pfile.Path, convertMapToString(pfile.Result))
+	err := cmd.Run()
+	if err != nil {
+		return setResult(pfile, pfile.Path, resultConfig.From, resultConfig.Fail, []int{0, 0})
+	}
+	return setResult(pfile, pfile.Path, resultConfig.From, resultConfig.Success, []int{1,1})
 }

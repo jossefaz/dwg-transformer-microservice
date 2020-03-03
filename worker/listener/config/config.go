@@ -13,8 +13,10 @@ type Configuration struct {
 			ConnString string   `json:"ConnString"`
 			QueueNames []string `json:"QueueNames"`
 			Listennig  []string `json:"Listennig"`
+			Result    utils.Result
 		} `json:"Rabbitmq"`
 	} `json:"Queue"`
+
 	Logs struct {
 		Main struct {
 			Path  string

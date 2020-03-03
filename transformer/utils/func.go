@@ -52,19 +52,23 @@ func execute(pfile *globalUtils.PickFile, output string) []byte{
 		cmd := exec.Command("dwgread", pfile.Path, "-O", output, "-o", outpath)
 		err := cmd.Run()
 		if err != nil {
-			return setResult(pfile, pfile.Path, resultConfig.From, true)
+			return setResult(pfile, pfile.Path, resultConfig.From, resultConfig.Fail, true)
 		}
-		return setResult(pfile, outpath, resultConfig.From, false)
+		return setResult(pfile, outpath, resultConfig.From, resultConfig.Success, false)
 	}
-	return setResult(pfile, outpath, resultConfig.From, true)
+	return setResult(pfile, outpath, resultConfig.From, resultConfig.Success,  true)
 }
 
-func setResult(pfile *globalUtils.PickFile, path string, from string, error bool)[]byte {
+func setResult(pfile *globalUtils.PickFile, path string, from string, to string, error bool)[]byte {
 	execRes := 1
 	if error {
 		execRes = 0
 	}
-	mess, err := globalUtils.SetResultMessage(pfile, []string{"Transform"}, []int {execRes},  from, path)
+	keys := make([]string, 0, len(pfile.Result))
+	for k := range pfile.Result {
+		keys = append(keys, k)
+	}
+	mess, err := globalUtils.SetResultMessage(pfile, keys, []int {execRes},  from, to, path)
 	if err != nil {
 		HandleError(err, "Cannot set output and cannot run command :" + err.Error() + err.Error(), false)
 	}

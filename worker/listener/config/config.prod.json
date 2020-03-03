@@ -9,6 +9,11 @@
         "CheckDWG"
       ]
     },
+    "Result" : {
+      "Success" : "CheckedDWG",
+      "Fail" : "CheckedDWG",
+      "From" : "Worker"
+    },
     "Logs" : {
       "Main" : {
         "Path" : "shared/worker.log",

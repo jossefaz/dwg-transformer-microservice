@@ -29,7 +29,7 @@ func MessageReceiver(m amqp.Delivery, rmq queue.Rabbitmq)  {
 	}
 	if pFIle.From == "Transformer" {
 		getMessageFromTransformer(pFIle, rmq)
-	} else if pFIle.From == "worker" {
+	} else if pFIle.From == "Worker" {
 		getMessageFromWorker(pFIle)
 	}
 }
@@ -42,6 +42,7 @@ func getMessageFromTransformer(pFIle *globalUtils.PickFile, rmq queue.Rabbitmq) 
 			"BorderExist" : 0,
 			"InsideJer" : 0,
 		}
+		pFIle.To = "CheckDWG"
 
 		mess, err := json.Marshal(pFIle)
 		HandleError(err, "cannot convert transformed pFile to Json", false)
@@ -56,7 +57,7 @@ func getMessageFromTransformer(pFIle *globalUtils.PickFile, rmq queue.Rabbitmq) 
 }
 
 func getMessageFromWorker(pFIle *globalUtils.PickFile) {
-	fmt.Println("FROM WORKER :" + pFIle.Path + "")
+	config.Logger.Log.Info("FROM WORKER :" + pFIle.Path + "")
 }
 
 func MockData(rmqConn queue.Rabbitmq) {
@@ -69,6 +70,7 @@ func MockData(rmqConn queue.Rabbitmq) {
 				"Transform" : 0,
 			},
 			From : "controller",
+			To : "ConvertDWG",
 		})
 		HandleError(err, "Cannot encode JSON", false)
 		time.Sleep(time.Microsecond)
