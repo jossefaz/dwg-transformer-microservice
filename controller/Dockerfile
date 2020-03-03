@@ -18,7 +18,7 @@ FROM alpine
 # Copy our static executable.
 WORKDIR /app
 
-RUN mkdir -p shared/logs config && \
+RUN mkdir -p shared config && \
     chmod 777 shared
 COPY --from=builder /go/bin/main .
 COPY ./config/*.json ./config/
