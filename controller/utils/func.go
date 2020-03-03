@@ -39,9 +39,14 @@ func getMessageFromTransformer(pFIle *globalUtils.PickFile, rmq queue.Rabbitmq) 
 			"BorderExist" : 0,
 			"InsideJer" : 0,
 		}
+
 		mess, err := json.Marshal(pFIle)
 		HandleError(err, "cannot convert transformed pFile to Json")
-		rmq.SendMessage(mess, "CheckDWG")
+
+		res, err1 := rmq.SendMessage(mess, "CheckDWG")
+		HandleError(err1, "message sending error")
+		config.Logger.Log.Info(res)
+
 	} else if pFIle.Result["Transform"] == 0 {
 		log.Error("The transformer did not sucess to transform this file : " , pFIle.Path)
 	}
@@ -64,6 +69,9 @@ func MockData(rmqConn queue.Rabbitmq) {
 		})
 		HandleError(err, "Cannot encode JSON")
 		time.Sleep(time.Microsecond)
-		rmqConn.SendMessage(message, "ConvertDWG")
+
+		res, err1 := rmqConn.SendMessage(message, "ConvertDWG")
+		HandleError(err1, "message sending error")
+		config.Logger.Log.Info(res)
 	}
 }

@@ -28,7 +28,10 @@ func MessageReceiver(m amqp.Delivery, rmq queue.Rabbitmq)  {
 			log.Error("Error acknowledging message : %s", err)
 		} else {
 			res:= execute(pFIle, config.LocalConfig.OutputFormat)
-			rmq.SendMessage(res, resultConfig.Success)
+			mess, err1 := rmq.SendMessage(res, resultConfig.Success)
+			HandleError(err1, "message sending error")
+			config.Logger.Log.Info(mess)
+
 		}
 	}
 }
