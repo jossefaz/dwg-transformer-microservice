@@ -45,6 +45,4 @@ func GetConfig(env string) {
 		fmt.Println("Cannot instantiate logger : ", err)
 	}
 
-
-
 }

@@ -23,17 +23,16 @@ func HandleError(err error, msg string, exit bool) {
 
 func MessageReceiver(m amqp.Delivery, rmq queue.Rabbitmq)  {
 	if err := m.Ack(false); err != nil {
-		fmt.Printf("Error acknowledging message : %s", err)
+		config.Logger.Log.Error(fmt.Sprintf("Error acknowledging message : %s", err))
 	} else {
 		pFIle := &globalUtils.PickFile{}
-		globalUtils.HandleError(
-			json.Unmarshal(m.Body, pFIle), "Error decoding message in worker", &config.Logger)
+		HandleError(json.Unmarshal(m.Body, pFIle), "Error decoding message in worker",false)
 		cmd := exec.Command("python", "main.py", pFIle.Path, convertMapToString(pFIle.Result))
 		err = cmd.Run()
 		if err != nil {
 			mess, err1 :=rmq.SendMessage([]byte("WORKER DOES NOT WORKED"), "CheckedDWG")
 			HandleError(err1, "message sending error", false)
-			config.Logger.Log.Info(mess)
+			config.Logger.Log.Error(fmt.Sprintf(mess, err))
 		} else {
 			mess, err1 :=rmq.SendMessage([]byte("WORKER WORKED"), "CheckedDWG")
 			HandleError(err1, "message sending error", false)
