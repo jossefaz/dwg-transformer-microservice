@@ -68,8 +68,8 @@ func getOutputPath(basePath string, output string) (string, bool) {
 	fileExt := config.LocalConfig.FileExtensions[output]
 	currentPath := strings.Split(basePath, ".")
 	if !(currentPath[1] == "dwg" || currentPath[1] == "dxf") {
-		return "", false
+		return currentPath[0], false
 	}
-	outpath := strings.Split(basePath, ".")[0] + fileExt
+	outpath := currentPath[0] + fileExt
 	return outpath, true
 }

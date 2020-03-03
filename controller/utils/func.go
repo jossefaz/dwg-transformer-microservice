@@ -43,7 +43,7 @@ func getMessageFromTransformer(pFIle *globalUtils.PickFile, rmq queue.Rabbitmq) 
 		HandleError(err, "cannot convert transformed pFile to Json")
 		rmq.SendMessage(mess, "CheckDWG")
 	} else if pFIle.Result["Transform"] == 0 {
-		log.Error("The transformer did not sucess to transfor this file : " , pFIle.Path)
+		log.Error("The transformer did not sucess to transform this file : " , pFIle.Path)
 	}
 }
 
