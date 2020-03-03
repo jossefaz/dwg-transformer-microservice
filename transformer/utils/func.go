@@ -2,18 +2,23 @@ package utils
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/streadway/amqp"
 	"github.com/yossefazoulay/go_utils/queue"
 	globalUtils "github.com/yossefazoulay/go_utils/utils"
+	"os"
 	"os/exec"
 	"strings"
 	"transformer/config"
 )
 
 
-func HandleError(err error, msg string) {
+func HandleError(err error, msg string, exit bool) {
 	if err != nil {
-		config.Logger.Log.Error("%s: %s", msg, err)
+		config.Logger.Log.Error(fmt.Sprintf("%s: %s", msg, err))
+	}
+	if exit {
+		os.Exit(1)
 	}
 }
 
@@ -22,14 +27,14 @@ func MessageReceiver(m amqp.Delivery, rmq queue.Rabbitmq)  {
 	log := config.Logger.Log
 	pFIle := &globalUtils.PickFile{}
 	err := json.Unmarshal(m.Body, pFIle)
-	HandleError(err, "Error decoding message")
+	HandleError(err, "Error decoding message", false)
 	if pFIle.From !=  resultConfig.From{
 		if err := m.Ack(false); err != nil {
 			log.Error("Error acknowledging message : %s", err)
 		} else {
 			res:= execute(pFIle, config.LocalConfig.OutputFormat)
 			mess, err1 := rmq.SendMessage(res, resultConfig.Success)
-			HandleError(err1, "message sending error")
+			HandleError(err1, "message sending error", false)
 			config.Logger.Log.Info(mess)
 
 		}
@@ -61,7 +66,7 @@ func setResult(pfile *globalUtils.PickFile, path string, from string, error bool
 	}
 	mess, err := globalUtils.SetResultMessage(pfile, []string{"Transform"}, []int {execRes},  from, path)
 	if err != nil {
-		HandleError(err, "Cannot set output and cannot run command :" + err.Error() + err.Error())
+		HandleError(err, "Cannot set output and cannot run command :" + err.Error() + err.Error(), false)
 	}
 	return mess
 	}

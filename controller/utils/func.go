@@ -7,21 +7,23 @@ import (
 	"github.com/streadway/amqp"
 	"github.com/yossefazoulay/go_utils/queue"
 	globalUtils "github.com/yossefazoulay/go_utils/utils"
+	"os"
 	"time"
 )
-func HandleError(err error, msg string) {
-	log := config.Logger.Log
+func HandleError(err error, msg string, exit bool) {
 	if err != nil {
-		log.Error("%s: %s", msg, err)
+		config.Logger.Log.Error(fmt.Sprintf("%s: %s", msg, err))
 	}
-
+	if exit {
+		os.Exit(1)
+	}
 }
 
 func MessageReceiver(m amqp.Delivery, rmq queue.Rabbitmq)  {
 	log := config.Logger.Log
 	pFIle := &globalUtils.PickFile{}
 	err := json.Unmarshal(m.Body, pFIle)
-	HandleError(err, "Unable to convert message to json")
+	HandleError(err, "Unable to convert message to json", false)
 	if err := m.Ack(false); err != nil {
 		log.Error("Error acknowledging message : %s", err)
 	}
@@ -42,10 +44,10 @@ func getMessageFromTransformer(pFIle *globalUtils.PickFile, rmq queue.Rabbitmq) 
 		}
 
 		mess, err := json.Marshal(pFIle)
-		HandleError(err, "cannot convert transformed pFile to Json")
+		HandleError(err, "cannot convert transformed pFile to Json", false)
 
 		res, err1 := rmq.SendMessage(mess, "CheckDWG")
-		HandleError(err1, "message sending error")
+		HandleError(err1, "message sending error", false)
 		config.Logger.Log.Info(res)
 
 	} else if pFIle.Result["Transform"] == 0 {
@@ -68,11 +70,10 @@ func MockData(rmqConn queue.Rabbitmq) {
 			},
 			From : "controller",
 		})
-		HandleError(err, "Cannot encode JSON")
+		HandleError(err, "Cannot encode JSON", false)
 		time.Sleep(time.Microsecond)
-
 		res, err1 := rmqConn.SendMessage(message, "ConvertDWG")
-		HandleError(err1, "message sending error")
+		HandleError(err1, "message sending error", false)
 		config.Logger.Log.Info(res)
 	}
 }

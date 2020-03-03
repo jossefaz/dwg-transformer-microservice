@@ -12,7 +12,7 @@ func main() {
 	config.GetConfig(os.Args[1], os.Args[2])
 	queueConf := config.LocalConfig.Queue.Rabbitmq
 	rmqConn, err := queue.NewRabbit(queueConf.ConnString, queueConf.QueueNames)
-	utils.HandleError(err, "Error Occured when RabbitMQ Init")
+	utils.HandleError(err, "Error Occured when RabbitMQ Init", true)
 	if err == nil {
 		defer rmqConn.Conn.Close()
 		defer rmqConn.ChanL.Close()
