@@ -9,11 +9,12 @@ import (
 	globalUtils "github.com/yossefazoulay/go_utils/utils"
 	"time"
 )
-
 func HandleError(err error, msg string) {
+	log := config.Logger.Log
 	if err != nil {
-		config.Logger.Log.Error("%s: %s", msg, err)
+		log.Error("%s: %s", msg, err)
 	}
+
 }
 
 func MessageReceiver(m amqp.Delivery, rmq queue.Rabbitmq)  {
