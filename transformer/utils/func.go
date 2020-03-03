@@ -39,13 +39,16 @@ func getResultConfig() globalUtils.Result {
 
 func execute(pfile *globalUtils.PickFile, output string) []byte{
 	resultConfig := getResultConfig()
-	outpath := getOutputPath(pfile.Path, output)
-	cmd := exec.Command("dwgread", pfile.Path, "-O", output, "-o", outpath)
-	err := cmd.Run()
-	if err != nil {
-		return setResult(pfile, pfile.Path, resultConfig.From, true)
+	outpath, convert := getOutputPath(pfile.Path, output)
+	if convert {
+		cmd := exec.Command("dwgread", pfile.Path, "-O", output, "-o", outpath)
+		err := cmd.Run()
+		if err != nil {
+			return setResult(pfile, pfile.Path, resultConfig.From, true)
+		}
+		return setResult(pfile, outpath, resultConfig.From, false)
 	}
-	return setResult(pfile, outpath, resultConfig.From, false)
+	return setResult(pfile, outpath, resultConfig.From, true)
 }
 
 func setResult(pfile *globalUtils.PickFile, path string, from string, error bool)[]byte {
@@ -61,8 +64,12 @@ func setResult(pfile *globalUtils.PickFile, path string, from string, error bool
 	}
 
 
-func getOutputPath(basePath string, output string) string {
+func getOutputPath(basePath string, output string) (string, bool) {
 	fileExt := config.LocalConfig.FileExtensions[output]
+	currentPath := strings.Split(basePath, ".")
+	if !(currentPath[1] == "dwg" || currentPath[1] == "dxf") {
+		return "", false
+	}
 	outpath := strings.Split(basePath, ".")[0] + fileExt
-	return outpath
+	return outpath, true
 }
