@@ -6,3 +6,4 @@ bin/*
 venv/
 .idea/
 __pycache__/
+test/
