@@ -11,6 +11,12 @@ import (
 	"os/exec"
 )
 
+func HandleError(err error, msg string) {
+	if err != nil {
+		config.Logger.Log.Error("%s: %s", msg, err)
+	}
+}
+
 func MessageReceiver(m amqp.Delivery, rmq queue.Rabbitmq)  {
 	if err := m.Ack(false); err != nil {
 		fmt.Printf("Error acknowledging message : %s", err)

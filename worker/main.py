@@ -7,9 +7,7 @@ def main():
 
     with open(sys.argv[1], 'r') as f :
         try :
-
             j = sys.argv[2].split()
-
             oprint(j)
         except Exception as e :
             eprint("cannot convert args to json object :", str(e), sys.argv[2])
