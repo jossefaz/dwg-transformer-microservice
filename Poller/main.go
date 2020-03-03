@@ -9,7 +9,6 @@ import (
 type Timestamp time.Time
 
 type Attachements struct {
-	gorm.Model
 	reference int
 	status int
 	statusDate Timestamp
@@ -25,6 +24,11 @@ func main() {
 	db.DB()
 	db.DB().Ping()
 	defer db.Close()
+	check:= db.HasTable("Attachements")
+	fmt.Println(check)
+	//tables := []string{}
+	//db.Select(&tables, "SELECT * FROM Attachements")
+	//fmt.Println(tables)
 
 	//att := Attachements{}
 	//db.First(&att)
@@ -32,13 +36,13 @@ func main() {
 	//fmt.Println(att)
 	//fmt.Println("------------------------------")
 	// get all records
-	db.AutoMigrate(&Attachements{})
-	atts := []Attachements{} // a slice
-	db.Where(&Attachements{status: 0}).Find(&atts)
-	for _, v := range atts {
-		fmt.Println("reference : ", v.reference)
-		fmt.Println("path : ", v.path)
-	}
+	//db.AutoMigrate(&Attachements{})
+	//atts := []Attachements{} // a slice
+	//db.Where(&Attachements{status: 0}).Find(&atts)
+	//for _, v := range atts {
+	//	fmt.Println("reference : ", v.reference)
+	//	fmt.Println("path : ", v.path)
+	//}
 
 	//dbConn.Find(&activities)
 	//fmt.Println(activities)
