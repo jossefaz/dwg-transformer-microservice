@@ -32,14 +32,7 @@ func main() {
 	//fmt.Println(att)
 	//fmt.Println("------------------------------")
 	// get all records
-	atts := []Attachements{} // a slice
 
-	db.Where("status = ?", "0").Find(&atts)
-	for _, v := range atts {
-		fmt.Println("reference : ", v.Reference)
-		fmt.Println("path : ", v.Path)
-	}
-	db.GetErrors()
 
 	//dbConn.Find(&activities)
 	//fmt.Println(activities)

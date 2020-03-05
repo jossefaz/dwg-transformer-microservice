@@ -1,7 +1,7 @@
 from shapely.geometry import Point
 import sys
 import json
-from worker.utils.io import oprint, eprint
+from utils.io import oprint, eprint
 
 
 def main():

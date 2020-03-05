@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"dal/config"
 	"encoding/json"
 	"fmt"
 	"github.com/jinzhu/gorm"
@@ -8,8 +9,11 @@ import (
 	"github.com/yossefazoulay/go_utils/queue"
 	globalUtils "github.com/yossefazoulay/go_utils/utils"
 	"os"
-	"dal/config"
 )
+type cDb struct {
+	*gorm.DB
+}
+
 
 func HandleError(err error, msg string, exit bool) {
 	if err != nil {
@@ -20,29 +24,34 @@ func HandleError(err error, msg string, exit bool) {
 	}
 }
 
-
-
 func MessageReceiver(m amqp.Delivery, rmq queue.Rabbitmq)  {
-	log := config.Logger.Log
-
-	dbQ := &globalUtils.DbQuery{}
+	dbQ := unpackMessage(m)
 	dbconf := config.GetDBConf(dbQ.Schema)
-	err := json.Unmarshal(m.Body, dbQ)
-	HandleError(err, "Error decoding message", false)
-	db, errdb := connectToDb(dbconf.Dialect, dbconf.ConnString)
-	HandleError(errdb, "Error decoding message", errdb != nil)
+	db := connectToDb(dbconf.Dialect, dbconf.ConnString)
+
 	defer db.Close()
-	log.Info(dbQ.ORMSQL)
 }
 
-func connectToDb(dialect string, connString string) (*gorm.DB, error) {
+func unpackMessage(m amqp.Delivery) *globalUtils.DbQuery {
+	dbQ := &globalUtils.DbQuery{}
+	err := json.Unmarshal(m.Body, dbQ)
+	HandleError(err, "Error decoding DB message", false)
+	return dbQ
+}
+
+func connectToDb(dialect string, connString string) *cDb {
 	db, err := gorm.Open(dialect, connString)
-	if err!=nil {
-		fmt.Println("Cannot connect to DB", err)
-		return &gorm.DB{}, err
-	}
+	HandleError(err, "Error connecting to db", err != nil)
 	db.DB()
 	db.DB().Ping()
-	return db, nil
+	var dup = cDb{ db}
+	return &dup
+}
+
+func (db cDb) retrieve(tableName string, query string, val string) {
+	atts :=  config.GetTableStruct(tableName)
+	db.Where(query, val).Find(&atts)
+	db.GetErrors()
+
 }
 //"mysql", "root:Dev123456!@(localhost)/dwg_transformer?charset=utf8&parseTime=True&loc=Local"

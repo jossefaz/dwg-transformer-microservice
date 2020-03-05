@@ -51,6 +51,10 @@ var configEnv = map[string]string{
 func GetDBConf(schema string) Schema{
 	return model.Schema[schema]
 }
+func GetTableStruct(tablename string) interface{} {
+	return model.Tables[tablename]
+}
+
 func GetConfig(env string) {
 	configuration := Configuration{}
 	err := gonfig.GetConf(configEnv[env], &configuration)

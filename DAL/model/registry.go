@@ -3,7 +3,7 @@ package model
 import "dal/config"
 
 var Tables = map[string]interface{}{
-	"Attachments" : Attachements{},
+	"Attachments" : []Attachements{},
 }
 
 var Schema = map[string] config.Schema {
