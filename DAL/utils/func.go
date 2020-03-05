@@ -20,12 +20,29 @@ func HandleError(err error, msg string, exit bool) {
 	}
 }
 
+
+
 func MessageReceiver(m amqp.Delivery, rmq queue.Rabbitmq)  {
 	log := config.Logger.Log
-	pFIle := &globalUtils.PickFile{}
-	err := json.Unmarshal(m.Body, pFIle)
-	HandleError(err, "Error decoding message", false)
 
-	db, err := gorm.Open("mysql", "root:Dev123456!@(localhost)/dwg_transformer?charset=utf8&parseTime=True&loc=Local")
-	log.Info(pFIle.Result)
+	dbQ := &globalUtils.DbQuery{}
+	dbconf := config.GetDBConf(dbQ.Schema)
+	err := json.Unmarshal(m.Body, dbQ)
+	HandleError(err, "Error decoding message", false)
+	db, errdb := connectToDb(dbconf.Dialect, dbconf.ConnString)
+	HandleError(errdb, "Error decoding message", errdb != nil)
+	defer db.Close()
+	log.Info(dbQ.ORMSQL)
 }
+
+func connectToDb(dialect string, connString string) (*gorm.DB, error) {
+	db, err := gorm.Open(dialect, connString)
+	if err!=nil {
+		fmt.Println("Cannot connect to DB", err)
+		return &gorm.DB{}, err
+	}
+	db.DB()
+	db.DB().Ping()
+	return db, nil
+}
+//"mysql", "root:Dev123456!@(localhost)/dwg_transformer?charset=utf8&parseTime=True&loc=Local"

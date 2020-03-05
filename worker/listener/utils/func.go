@@ -28,7 +28,6 @@ func MessageReceiver(m amqp.Delivery, rmq queue.Rabbitmq)  {
 		pFIle := &globalUtils.PickFile{}
 		HandleError(json.Unmarshal(m.Body, pFIle), "Error decoding message in worker",false)
 		res:= execute(pFIle)
-		config.Logger.Log.Info(fmt.Sprintf(string(m.Body)))
 		mess, err1 :=rmq.SendMessage(res, config.LocalConfig.Queue.Rabbitmq.Result.Success)
 		HandleError(err1, "message sending error", false)
 		config.Logger.Log.Error(fmt.Sprintf(mess, err))
@@ -61,6 +60,7 @@ func execute(pfile *globalUtils.PickFile) []byte{
 	cmd := exec.Command("python", "bootstrap.py", pfile.Path, convertMapToString(pfile.Result))
 	err := cmd.Run()
 	if err != nil {
+		HandleError(err, "cannot execute python", false)
 		return setResult(pfile, pfile.Path, resultConfig.From, resultConfig.Fail, []int{0, 0})
 	}
 	return setResult(pfile, pfile.Path, resultConfig.From, resultConfig.Success, []int{1,1})

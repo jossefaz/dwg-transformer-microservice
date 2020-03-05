@@ -1,6 +1,7 @@
 package config
 
 import (
+	"dal/model"
 	"fmt"
 	"github.com/tkanos/gonfig"
 	"github.com/yossefazoulay/go_utils/logs"
@@ -10,7 +11,11 @@ import (
 var LocalConfig Configuration
 var Logger utils.Logger
 
-
+type Schema struct {
+	ConnString string
+	Name string
+	Dialect string
+}
 type Configuration struct {
 	Queue struct {
 		Rabbitmq struct {
@@ -26,7 +31,14 @@ type Configuration struct {
 			Level string
 		}
 	}
+	DB struct {
+		Mysql struct {
+			Schema map[string]Schema
+		} `json:"Mysql"`
+	} `json:"DB"`
 }
+
+
 
 var configEnv = map[string]string{
 	"dev" : "./config/config.dev.json",
@@ -34,6 +46,11 @@ var configEnv = map[string]string{
 }
 
 
+
+
+func GetDBConf(schema string) Schema{
+	return model.Schema[schema]
+}
 func GetConfig(env string) {
 	configuration := Configuration{}
 	err := gonfig.GetConf(configEnv[env], &configuration)

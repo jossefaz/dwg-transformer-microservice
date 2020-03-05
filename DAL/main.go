@@ -26,13 +26,8 @@ func main() {
 
 
 
-	if err!=nil {
-		fmt.Println("Cannot connect to DB", err)
-		panic("Cannot connect to DB")
-	}
-	db.DB()
-	db.DB().Ping()
-	defer db.Close()
+
+
 
 	//fmt.Println(att)
 	//fmt.Println("------------------------------")
