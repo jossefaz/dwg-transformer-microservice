@@ -73,7 +73,7 @@ func getResultConfig() globalUtils.Result {
 }
 func execute(pfile *globalUtils.PickFile) []byte{
 	resultConfig := getResultConfig()
-	cmd := exec.Command("python", "main.py", pfile.Path, convertMapToString(pfile.Result))
+	cmd := exec.Command("python", "bootstrap.py", pfile.Path, convertMapToString(pfile.Result))
 	err := cmd.Run()
 	if err != nil {
 		return setResult(pfile, pfile.Path, resultConfig.From, resultConfig.Fail, []int{0, 0})

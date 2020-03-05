@@ -10,40 +10,38 @@ RUN go get -d -v ./... && \
     CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o /go/bin/main
 
 
-FROM osgeo/gdal:alpine-normal-latest as base
+FROM osgeo/gdal:ubuntu-full-latest as venvbuilder
+RUN apt update && \
+    apt -y install python3-virtualenv
 
-FROM base as builder
+ENV VIRTUAL_ENV=./venv
+RUN python3 -m virtualenv --python=/usr/bin/python3 $VIRTUAL_ENV
+ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 
-ENV PYTHONUNBUFFERED=1
+# Install dependencies:
+COPY requirements.txt .
+RUN pip install -r requirements.txt
 
-
-
-RUN echo "**** install Python ****" && \
-    apk add --no-cache python3 && \
-    if [ ! -e /usr/bin/python ]; then ln -sf python3 /usr/bin/python ; fi && \
-    \
-    apk --no-cache add --virtual .builddeps gcc gfortran musl-dev && \
-    echo "**** install pip ****" && \
-    python3 -m ensurepip && \
-    rm -r /usr/lib/python*/ensurepip && \
-    pip3 install --no-cache --upgrade pip setuptools wheel && \
-
-    if [ ! -e /usr/bin/pip ]; then ln -s pip3 /usr/bin/pip ; fi && \
-    apk del .builddeps     && rm -rf /root/.cache
-
-
-FROM base
+FROM osgeo/gdal:ubuntu-small-latest
 
 WORKDIR /app
+
+RUN apt update && \
+    apt -y install python3-virtualenv
+
 RUN mkdir -p shared/logs config && \
     chmod 777 shared
-COPY requirements.txt /requirements.txt
-RUN     pip3 install -r /requirements.txt
+
+ENV VIRTUAL_ENV=./venv
+RUN python3 -m virtualenv --python=/usr/bin/python3 $VIRTUAL_ENV
+ENV PATH="$VIRTUAL_ENV/bin:$PATH"
+
+COPY --from=venvbuilder ./venv ./venv
 
 COPY --from=gobuilder /go/bin/main .
 COPY ./listener/config/*.json ./config/
 
-COPY main.py ./
+COPY bootstrap.py ./
 
-CMD ["./main", "prod"]
+CMD ["python", "bootstrap.py"]
 
