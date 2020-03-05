@@ -14,3 +14,9 @@ type Attachements struct {
 func (Attachements) TableName() string {
 	return "Attachements"
 }
+
+type Schema struct {
+	ConnString string
+	Name string
+	Dialect string
+}

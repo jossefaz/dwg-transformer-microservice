@@ -10,6 +10,7 @@ import (
 	globalUtils "github.com/yossefazoulay/go_utils/utils"
 	"os"
 )
+
 type cDb struct {
 	*gorm.DB
 }
@@ -27,7 +28,7 @@ func HandleError(err error, msg string, exit bool) {
 func MessageReceiver(m amqp.Delivery, rmq queue.Rabbitmq)  {
 	dbQ := unpackMessage(m)
 	dbconf := config.GetDBConf(dbQ.Schema)
-	db := connectToDb(dbconf.Dialect, dbconf.ConnString)
+	db := ConnectToDb(dbconf.Dialect, dbconf.ConnString)
 
 	defer db.Close()
 }
@@ -39,7 +40,7 @@ func unpackMessage(m amqp.Delivery) *globalUtils.DbQuery {
 	return dbQ
 }
 
-func connectToDb(dialect string, connString string) *cDb {
+func ConnectToDb(dialect string, connString string) *cDb {
 	db, err := gorm.Open(dialect, connString)
 	HandleError(err, "Error connecting to db", err != nil)
 	db.DB()
@@ -48,10 +49,9 @@ func connectToDb(dialect string, connString string) *cDb {
 	return &dup
 }
 
-func (db cDb) retrieve(tableName string, query string, val string) {
+func (db cDb) Retrieve(tableName string, query string, val string) {
 	atts :=  config.GetTableStruct(tableName)
 	db.Where(query, val).Find(&atts)
 	db.GetErrors()
-
 }
 //"mysql", "root:Dev123456!@(localhost)/dwg_transformer?charset=utf8&parseTime=True&loc=Local"

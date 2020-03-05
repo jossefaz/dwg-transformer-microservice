@@ -11,11 +11,7 @@ import (
 var LocalConfig Configuration
 var Logger utils.Logger
 
-type Schema struct {
-	ConnString string
-	Name string
-	Dialect string
-}
+
 type Configuration struct {
 	Queue struct {
 		Rabbitmq struct {
@@ -33,7 +29,7 @@ type Configuration struct {
 	}
 	DB struct {
 		Mysql struct {
-			Schema map[string]Schema
+			Schema map[string]model.Schema
 		} `json:"Mysql"`
 	} `json:"DB"`
 }
@@ -48,12 +44,7 @@ var configEnv = map[string]string{
 
 
 
-func GetDBConf(schema string) Schema{
-	return model.Schema[schema]
-}
-func GetTableStruct(tablename string) interface{} {
-	return model.Tables[tablename]
-}
+
 
 func GetConfig(env string) {
 	configuration := Configuration{}
@@ -62,6 +53,7 @@ func GetConfig(env string) {
 		fmt.Println("Cannot read config file")
 	}
 	LocalConfig = configuration
+	initReg()
 	Logger, err = logs.InitLogs(LocalConfig.Logs.Main.Path, LocalConfig.Logs.Main.Level)
 	if err != nil {
 		fmt.Println("Cannot instantiate logger : ", err)

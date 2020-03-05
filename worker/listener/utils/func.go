@@ -30,7 +30,7 @@ func MessageReceiver(m amqp.Delivery, rmq queue.Rabbitmq)  {
 		res:= execute(pFIle)
 		mess, err1 :=rmq.SendMessage(res, config.LocalConfig.Queue.Rabbitmq.Result.Success)
 		HandleError(err1, "message sending error", false)
-		config.Logger.Log.Error(fmt.Sprintf(mess, err))
+		config.Logger.Log.Info(fmt.Sprintf(mess, err))
 	}
 }
 
