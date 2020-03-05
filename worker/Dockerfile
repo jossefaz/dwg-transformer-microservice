@@ -43,5 +43,5 @@ COPY ./listener/config/*.json ./config/
 
 COPY bootstrap.py ./
 
-CMD ["python", "bootstrap.py"]
+CMD ["./main", "prod"]
 
