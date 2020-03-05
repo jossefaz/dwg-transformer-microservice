@@ -28,7 +28,8 @@ func MessageReceiver(m amqp.Delivery, rmq queue.Rabbitmq)  {
 		pFIle := &globalUtils.PickFile{}
 		HandleError(json.Unmarshal(m.Body, pFIle), "Error decoding message in worker",false)
 		res:= execute(pFIle)
-		mess, err1 :=rmq.SendMessage(res, "CheckedDWG")
+		config.Logger.Log.Info(fmt.Sprintf(string(m.Body)))
+		mess, err1 :=rmq.SendMessage(res, config.LocalConfig.Queue.Rabbitmq.Result.Success)
 		HandleError(err1, "message sending error", false)
 		config.Logger.Log.Error(fmt.Sprintf(mess, err))
 	}
@@ -55,6 +56,15 @@ func convertMapKeysToString(customMap map[string]int) string {
 	return b.String()
 
 }
+func execute(pfile *globalUtils.PickFile) []byte{
+	resultConfig := getResultConfig()
+	cmd := exec.Command("python", "bootstrap.py", pfile.Path, convertMapToString(pfile.Result))
+	err := cmd.Run()
+	if err != nil {
+		return setResult(pfile, pfile.Path, resultConfig.From, resultConfig.Fail, []int{0, 0})
+	}
+	return setResult(pfile, pfile.Path, resultConfig.From, resultConfig.Success, []int{1,1})
+}
 
 func setResult(pfile *globalUtils.PickFile, path string, from string, to string, result[]int)[]byte {
 
@@ -71,12 +81,4 @@ func setResult(pfile *globalUtils.PickFile, path string, from string, to string,
 func getResultConfig() globalUtils.Result {
 	return config.LocalConfig.Queue.Rabbitmq.Result
 }
-func execute(pfile *globalUtils.PickFile) []byte{
-	resultConfig := getResultConfig()
-	cmd := exec.Command("python", "bootstrap.py", pfile.Path, convertMapToString(pfile.Result))
-	err := cmd.Run()
-	if err != nil {
-		return setResult(pfile, pfile.Path, resultConfig.From, resultConfig.Fail, []int{0, 0})
-	}
-	return setResult(pfile, pfile.Path, resultConfig.From, resultConfig.Success, []int{1,1})
-}
+

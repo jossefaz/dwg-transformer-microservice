@@ -37,7 +37,7 @@ func MessageReceiver(m amqp.Delivery, rmq queue.Rabbitmq)  {
 func getMessageFromTransformer(pFIle *globalUtils.PickFile, rmq queue.Rabbitmq) {
 	log:= config.Logger.Log
 	if pFIle.Result["Transform"] == 1 {
-		pFIle.From = "controller"
+		pFIle.From = "Controller"
 		pFIle.Result = map[string]int{
 			"BorderExist" : 0,
 			"InsideJer" : 0,
@@ -49,6 +49,7 @@ func getMessageFromTransformer(pFIle *globalUtils.PickFile, rmq queue.Rabbitmq) 
 
 		res, err1 := rmq.SendMessage(mess, "CheckDWG")
 		HandleError(err1, "message sending error", false)
+
 		config.Logger.Log.Info(res)
 
 	} else if pFIle.Result["Transform"] == 0 {
