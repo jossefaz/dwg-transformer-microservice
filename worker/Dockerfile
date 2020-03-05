@@ -46,5 +46,7 @@ COPY ./listener/config/*.json ./config/
 
 COPY bootstrap.py ./
 
+RUN touch __init__.py
+
 CMD ["./main", "prod"]
 
