@@ -20,8 +20,6 @@ type Configuration struct {
 			Result    utils.Result
 		} `json:"Rabbitmq"`
 	} `json:"Queue"`
-	OutputFormat   string
-	FileExtensions map[string]string
 	Logs struct {
 		Main struct {
 			Path  string
@@ -43,7 +41,6 @@ func GetConfig(env string) {
 		fmt.Println("Cannot read config file")
 	}
 	LocalConfig = configuration
-	LocalConfig.OutputFormat = output
 	Logger, err = logs.InitLogs(LocalConfig.Logs.Main.Path, LocalConfig.Logs.Main.Level)
 	if err != nil {
 		fmt.Println("Cannot instantiate logger : ", err)

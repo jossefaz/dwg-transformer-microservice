@@ -1,0 +1,33 @@
+{
+  "Queue" : {
+    "Rabbitmq" : {
+      "ConnString" : "amqp://guest:guest@rabbitmq?connection_attempts=5&retry_delay=5",
+      "QueueNames" : [
+        "ConvertDWG", "ConvertedDWG"
+      ],
+      "Listennig" : [
+        "ConvertDWG"
+      ],
+      "Result" : {
+        "Success" : "ConvertedDWG",
+        "Fail" : "ConvertedDWG",
+        "From" : "Transformer"
+      }
+    }
+  },
+  "Logs" : {
+    "Main" : {
+      "Path" : "shared/DAL.log",
+      "Level" : "DEBUG"
+    }
+  },
+  "DB" :  {
+    "Mysql" : {
+      "Schema" : {
+        "dwg_transformer" : {
+          "ConnString" :  "root:Dev123456!@(localhost)/dwg_transformer?charset=utf8&parseTime=True&loc=Local"
+        }
+      }
+    }
+  }
+}

@@ -44,6 +44,8 @@ func getMessageFromTransformer(pFIle *globalUtils.PickFile, rmq queue.Rabbitmq) 
 		}
 		pFIle.To = "CheckDWG"
 
+
+
 		mess, err := json.Marshal(pFIle)
 		HandleError(err, "cannot convert transformed pFile to Json", false)
 

@@ -6,20 +6,13 @@ import (
 	_ "github.com/jinzhu/gorm/dialects/mysql"
 	"github.com/yossefazoulay/go_utils/queue"
 	"os"
-	"poller/config"
-	"time"
+	"dal/config"
+	"dal/utils"
 )
-type Timestamp time.Time
 
-type Attachements struct {
-	Reference int
-	Status int
-	StatusDate Timestamp
-	Path string
-}
-func (Attachements) TableName() string {
-	return "Attachements"
-}
+
+
+
 
 func main() {
 
@@ -32,7 +25,7 @@ func main() {
 	rmqConn.OpenListening(queueConf.Listennig, utils.MessageReceiver)
 
 
-	db, err := gorm.Open("mysql", "root:Dev123456!@(localhost)/dwg_transformer?charset=utf8&parseTime=True&loc=Local")
+
 	if err!=nil {
 		fmt.Println("Cannot connect to DB", err)
 		panic("Cannot connect to DB")

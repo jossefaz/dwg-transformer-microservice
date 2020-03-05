@@ -3,7 +3,7 @@
     "Rabbitmq" : {
       "ConnString" : "amqp://guest:guest@rabbitmq?connection_attempts=5&retry_delay=5",
       "QueueNames" : [
-        "ConvertDWG", "ConvertedDWG"
+        "CheckDWG", "CheckedDWG"
       ],
       "Listennig" : [
         "CheckDWG"
