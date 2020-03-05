@@ -27,7 +27,6 @@ spec:
   - port: 5672
   selector:
     app: dwg-queue
-    component: rabbitmq
 
 ---
 apiVersion : v1
@@ -39,4 +38,16 @@ spec :
     app : dwg-worker
   type : ClusterIP
 ---
+
+apiVersion : v1
+kind : Endpoints
+metadata :
+  name : mysql
+subsets :
+  - addresses :
+      - ip : 127.0.0.1
+    ports :
+      - port : 3306
+---
+
     

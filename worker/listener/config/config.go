@@ -16,7 +16,6 @@ type Configuration struct {
 			Result    utils.Result
 		} `json:"Rabbitmq"`
 	} `json:"Queue"`
-
 	Logs struct {
 		Main struct {
 			Path  string
@@ -24,6 +23,7 @@ type Configuration struct {
 		}
 	}
 }
+
 
 var configEnv = map[string]string{
 	"dev" : "./config/config.dev.json",

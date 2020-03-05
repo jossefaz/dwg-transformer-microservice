@@ -3,22 +3,22 @@
     "Rabbitmq" : {
       "ConnString" : "amqp://guest:guest@rabbitmq?connection_attempts=5&retry_delay=5",
       "QueueNames" : [
-        "CheckDWG", "CheckedDWG"
+        "ConvertDWG", "ConvertedDWG"
       ],
       "Listennig" : [
         "CheckDWG"
-      ]
-    },
-    "Result" : {
-      "Success" : "CheckedDWG",
-      "Fail" : "CheckedDWG",
-      "From" : "Worker"
-    },
-    "Logs" : {
-      "Main" : {
-        "Path" : "shared/worker.log",
-        "Level" : "DEBUG"
+      ],
+      "Result" : {
+        "Success" : "CheckedDWG",
+        "Fail" : "CheckedDWG",
+        "From" : "Worker"
       }
+    }
+  },
+  "Logs" : {
+    "Main" : {
+      "Path" : "shared/worker.log",
+      "Level" : "DEBUG"
     }
   }
 }

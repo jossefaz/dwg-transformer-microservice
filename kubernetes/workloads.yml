@@ -74,7 +74,6 @@ spec:
     metadata:
       labels:
         app: dwg-queue
-        component: rabbitmq
     spec:
       containers:
       - image: rabbitmq:management
