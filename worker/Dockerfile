@@ -37,6 +37,9 @@ RUN python3 -m virtualenv --python=/usr/bin/python3 $VIRTUAL_ENV
 ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 
 COPY --from=venvbuilder ./venv ./venv
+COPY ./utils ./utils
+COPY ./resource ./resource
+COPY ./registry ./registry
 
 COPY --from=gobuilder /go/bin/main .
 COPY ./listener/config/*.json ./config/
