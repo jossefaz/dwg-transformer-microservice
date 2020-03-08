@@ -32,6 +32,14 @@ services :
     volumes:
       - ./uploads:/app/shared
 
+  DAL:
+    depends_on:
+      - rabbitmq
+    image: yossefazoulay/dwg-DAL
+    restart: on-failure
+    network_mode: "host"
+
+
   
 
 
