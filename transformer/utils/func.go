@@ -2,6 +2,7 @@ package utils
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"github.com/streadway/amqp"
 	"github.com/yossefazoulay/go_utils/queue"
@@ -32,7 +33,10 @@ func MessageReceiver(m amqp.Delivery, rmq queue.Rabbitmq)  {
 		if err := m.Ack(false); err != nil {
 			log.Error("Error acknowledging message : %s", err)
 		} else {
-			res:= execute(pFIle, config.LocalConfig.OutputFormat)
+			res, err:= execute(pFIle, config.LocalConfig.OutputFormat)
+			if err != nil {
+				config.Logger.Log.Error("cannot execute transformation on path :", pFIle.Path)
+			}
 			mess, err1 := rmq.SendMessage(res, resultConfig.Success, resultConfig.From)
 			HandleError(err1, "message sending error", false)
 			config.Logger.Log.Info(mess)
@@ -45,17 +49,17 @@ func getResultConfig() globalUtils.Result {
 	return config.LocalConfig.Queue.Rabbitmq.Result
 }
 
-func execute(pfile *globalUtils.PickFile, output string) []byte{
+func execute(pfile *globalUtils.PickFile, output string) ([]byte, error){
 	outpath, convert := getOutputPath(pfile.Path, output)
 	if convert {
 		cmd := exec.Command("dwgread", pfile.Path, "-O", output, "-o", outpath)
 		err := cmd.Run()
 		if err != nil {
-			return setResult(pfile, pfile.Path, true)
+			return setResult(pfile, pfile.Path, true), err
 		}
-		return setResult(pfile, outpath,  false)
+		return setResult(pfile, outpath,  false), nil
 	}
-	return setResult(pfile, outpath,  true)
+	return setResult(pfile, outpath,  true), errors.New("not dwg or dxf")
 }
 
 func setResult(pfile *globalUtils.PickFile, path string, error bool)[]byte {
