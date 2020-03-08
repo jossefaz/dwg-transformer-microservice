@@ -3,8 +3,27 @@
     "Rabbitmq" : {
       "ConnString" : "amqp://guest:guest@localhost:5672/",
       "QueueNames" : [
-        "ConvertDWG", "CheckDWG"
-      ]
+        "ConvertDWG", "ConvertedDWG"
+      ],
+      "Listennig" : [
+        "ConvertDWG"
+      ],
+      "Result" : {
+        "Success" : "ConvertedDWG",
+        "Fail" : "ConvertedDWG",
+        "From" : "Transformer"
+      }
+    }
+  },
+  "OutputFormat" : "GeoJSON",
+  "FileExtensions" : {
+    "GeoJSON" : ".json",
+    "dxf" : ".dxf"
+  },
+  "Logs" : {
+    "Main" : {
+      "Path" : "shared/transformer.log",
+      "Level" : "DEBUG"
     }
   }
 }

@@ -19,7 +19,7 @@
     "Mysql" : {
       "Schema" : {
         "dwg_transformer" : {
-          "ConnString" :  "docker:Dev123456!@(mysql)/dwg_transformer?charset=utf8&parseTime=True&loc=Local",
+          "ConnString" :  "root:Dev123456!@(localhost)/dwg_transformer?charset=utf8&parseTime=True&loc=Local",
           "Name" : "dwg_transformer",
           "Dialect" : "mysql"
         }

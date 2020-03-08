@@ -89,7 +89,7 @@ func PoolReceiver(m amqp.Delivery, rmq queue.Rabbitmq) {
 		})
 		HandleError(err, "Cannot encode JSON", false)
 		time.Sleep(time.Microsecond)
-		res, err1 := rmq.SendMessage(message, Constant.Channels.CheckDWG, Constant.From)
+		res, err1 := rmq.SendMessage(message, Constant.Channels.ConvertDWG, Constant.From)
 		HandleError(err1, "message sending error", false)
 		config.Logger.Log.Info(res)
 	}
@@ -106,5 +106,5 @@ func Pooling(rmqConn queue.Rabbitmq) {
 			"status" : 0,
 		},
 	})
-	rmqConn.SendMessage(mess, Constant.Channels.CheckDWG, Constant.From)
+	rmqConn.SendMessage(mess, Constant.Channels.Dal_Req, Constant.From)
 }

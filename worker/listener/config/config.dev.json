@@ -1,10 +1,25 @@
+
 {
   "Queue" : {
     "Rabbitmq" : {
       "ConnString" : "amqp://guest:guest@localhost:5672/",
       "QueueNames" : [
-        "ConvertDWG", "CheckDWG"
-      ]
+        "CheckDWG", "CheckedDWG"
+      ],
+      "Listennig" : [
+        "CheckDWG"
+      ],
+      "Result" : {
+        "Success" : "CheckedDWG",
+        "Fail" : "CheckedDWG",
+        "From" : "Worker"
+      }
+    }
+  },
+  "Logs" : {
+    "Main" : {
+      "Path" : "shared/worker.log",
+      "Level" : "DEBUG"
     }
   }
 }
