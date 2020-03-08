@@ -73,7 +73,7 @@ func PoolReceiver(m amqp.Delivery, rmq queue.Rabbitmq) {
 	}
 	log := config.Logger.Log
 	res := []attachements{}
-	mess := json.Unmarshal(m.Body, res)
+	mess := json.Unmarshal(m.Body, &res)
 	if err := m.Ack(false); err != nil {
 		log.Error("Error acknowledging message : %s", err)
 	}
