@@ -3,6 +3,7 @@ package main
 import (
 	"controller/config"
 	"controller/utils"
+	"fmt"
 	"github.com/yossefazoulay/go_utils/queue"
 	"os"
 	"os/signal"
@@ -24,8 +25,10 @@ func main() {
 	go scheduler(tick, done, rmqConn)
 	sigs := make(chan os.Signal, 1)
 	signal.Notify(sigs, syscall.SIGINT, syscall.SIGTERM)
-	rmqConn.OpenListening(queueConf.Listennig, utils.MessageReceiver)
-
+	err1 := rmqConn.OpenListening(queueConf.Listennig, utils.MessageReceiver)
+	if err1 != nil {
+		fmt.Println(err)
+	}
 	<-sigs
 	done <- true
 
