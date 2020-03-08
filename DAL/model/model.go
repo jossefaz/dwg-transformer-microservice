@@ -1,10 +1,10 @@
 package model
 
 import (
+	"dal/log"
 	"fmt"
 	"github.com/jinzhu/gorm"
 	globalUtils "github.com/yossefazoulay/go_utils/utils"
-	"os"
 	"time"
 )
 
@@ -23,8 +23,8 @@ type Timestamp time.Time
 func ConnectToDb(dialect string, connString string) *CDb{
 	db, err := gorm.Open(dialect, connString)
 	if err != nil {
+		log.Logger.Log.Error(err)
 		panic(fmt.Sprintf("%s", err))
-		os.Exit(1)
 	}
 	db.DB()
 	db.DB().Ping()

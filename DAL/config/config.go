@@ -4,12 +4,11 @@ import (
 	"dal/model"
 	"fmt"
 	"github.com/tkanos/gonfig"
-	"github.com/yossefazoulay/go_utils/logs"
 	"github.com/yossefazoulay/go_utils/utils"
 )
 
 var LocalConfig Configuration
-var Logger utils.Logger
+
 
 
 type Configuration struct {
@@ -21,12 +20,6 @@ type Configuration struct {
 			Result    utils.Result
 		} `json:"Rabbitmq"`
 	} `json:"Queue"`
-	Logs struct {
-		Main struct {
-			Path  string
-			Level string
-		}
-	}
 	DB struct {
 		Mysql struct {
 			Schema map[string]model.Schema
@@ -54,13 +47,6 @@ func GetConfig(env string) {
 	}
 	LocalConfig = configuration
 	initReg()
-	Logger, err = logs.InitLogs(LocalConfig.Logs.Main.Path, LocalConfig.Logs.Main.Level)
-	if err != nil {
-		fmt.Println("Cannot instantiate logger : ", err)
-	}
-
-
-
 }
 
 

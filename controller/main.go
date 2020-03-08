@@ -24,10 +24,7 @@ func main() {
 	go scheduler(tick, done, rmqConn)
 	sigs := make(chan os.Signal, 1)
 	signal.Notify(sigs, syscall.SIGINT, syscall.SIGTERM)
-
-	rmqConn.ListenMessage(utils.PoolReceiver, queueConf.Listennig[2])
-	rmqConn.ListenMessage(utils.MessageReceiver, queueConf.Listennig[0])
-	rmqConn.ListenMessage(utils.MessageReceiver, queueConf.Listennig[1])
+	rmqConn.OpenListening(queueConf.Listennig, utils.MessageReceiver)
 
 	<-sigs
 	done <- true

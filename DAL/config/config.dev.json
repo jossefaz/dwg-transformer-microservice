@@ -15,17 +15,11 @@
       }
     }
   },
-  "Logs" : {
-    "Main" : {
-      "Path" : "shared/DAL.log",
-      "Level" : "DEBUG"
-    }
-  },
   "DB" :  {
     "Mysql" : {
       "Schema" : {
         "dwg_transformer" : {
-          "ConnString" :  "root:Dev123456!@(172.20.0.1)/dwg_transformer?charset=utf8&parseTime=True&loc=Local",
+          "ConnString" :  "docker:Dev123456!@(mysql)/dwg_transformer?charset=utf8&parseTime=True&loc=Local",
           "Name" : "dwg_transformer",
           "Dialect" : "mysql"
         }

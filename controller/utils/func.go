@@ -20,6 +20,19 @@ func HandleError(err error, msg string, exit bool) {
 }
 
 func MessageReceiver(m amqp.Delivery, rmq queue.Rabbitmq)  {
+	switch m.Headers["From"] {
+	case "Transformer":
+		getMessageFromTransformer(m, rmq)
+	case "Worker" :
+		getMessageFromWorker(m)
+	case "DAL":
+		PoolReceiver(m, rmq)
+	default:
+		config.Logger.Log.Error("Received a message from a not known channel :", m.Headers["From"])
+	}
+}
+
+func unpackFileMessage(m amqp.Delivery) *globalUtils.PickFile{
 	log := config.Logger.Log
 	pFIle := &globalUtils.PickFile{}
 	err := json.Unmarshal(m.Body, pFIle)
@@ -27,39 +40,29 @@ func MessageReceiver(m amqp.Delivery, rmq queue.Rabbitmq)  {
 	if err := m.Ack(false); err != nil {
 		log.Error("Error acknowledging message : %s", err)
 	}
-	if pFIle.From == "Transformer" {
-		getMessageFromTransformer(pFIle, rmq)
-	} else if pFIle.From == "Worker" {
-		getMessageFromWorker(pFIle)
-	}
+	return pFIle
 }
 
-func getMessageFromTransformer(pFIle *globalUtils.PickFile, rmq queue.Rabbitmq) {
+func getMessageFromTransformer(m amqp.Delivery, rmq queue.Rabbitmq) {
+	pFIle := unpackFileMessage(m)
 	log:= config.Logger.Log
 	if pFIle.Result["Transform"] == 1 {
-		pFIle.From = "Controller"
 		pFIle.Result = map[string]int{
 			"BorderExist" : 0,
 			"InsideJer" : 0,
 		}
-		pFIle.To = "CheckDWG"
-
-
-
 		mess, err := json.Marshal(pFIle)
 		HandleError(err, "cannot convert transformed pFile to Json", false)
-
-		res, err1 := rmq.SendMessage(mess, "CheckDWG")
+		res, err1 := rmq.SendMessage(mess, Constant.Channels.CheckDWG, Constant.From)
 		HandleError(err1, "message sending error", false)
-
 		config.Logger.Log.Info(res)
-
 	} else if pFIle.Result["Transform"] == 0 {
 		log.Error("The transformer did not sucess to transform this file : " , pFIle.Path)
 	}
 }
 
-func getMessageFromWorker(pFIle *globalUtils.PickFile) {
+func getMessageFromWorker(m amqp.Delivery) {
+	pFIle := unpackFileMessage(m)
 	config.Logger.Log.Info("FROM WORKER :" + pFIle.Path + "")
 }
 
@@ -83,12 +86,10 @@ func PoolReceiver(m amqp.Delivery, rmq queue.Rabbitmq) {
 			Result : map[string]int{
 				"Transform" : 0,
 			},
-			From : "controller",
-			To : "ConvertDWG",
 		})
 		HandleError(err, "Cannot encode JSON", false)
 		time.Sleep(time.Microsecond)
-		res, err1 := rmq.SendMessage(message, "ConvertDWG")
+		res, err1 := rmq.SendMessage(message, Constant.Channels.CheckDWG, Constant.From)
 		HandleError(err1, "message sending error", false)
 		config.Logger.Log.Info(res)
 	}
@@ -105,5 +106,5 @@ func Pooling(rmqConn queue.Rabbitmq) {
 			"status" : 0,
 		},
 	})
-	rmqConn.SendMessage(mess, "Dal_Req")
-	}
+	rmqConn.SendMessage(mess, Constant.Channels.CheckDWG, Constant.From)
+}
