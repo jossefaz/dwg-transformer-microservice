@@ -63,12 +63,23 @@ func getMessageFromWorker(pFIle *globalUtils.PickFile) {
 	config.Logger.Log.Info("FROM WORKER :" + pFIle.Path + "")
 }
 
-func MockData(rmqConn queue.Rabbitmq) {
-	root := "./shared"
-	files := globalUtils.ListFilesInDir(root)
-	for _, file := range files {
+func PoolReceiver(m amqp.Delivery, rmq queue.Rabbitmq) {
+	type Timestamp time.Time
+	type attachements struct {
+		Reference int
+		Status int
+		StatusDate Timestamp
+		Path string
+	}
+	log := config.Logger.Log
+	res := []attachements{}
+	mess := json.Unmarshal(m.Body, res)
+	if err := m.Ack(false); err != nil {
+		log.Error("Error acknowledging message : %s", err)
+	}
+	for _, file := range res {
 		message, err := json.Marshal(globalUtils.PickFile{
-			Path: file,
+			Path: file.Path,
 			Result : map[string]int{
 				"Transform" : 0,
 			},
@@ -77,8 +88,22 @@ func MockData(rmqConn queue.Rabbitmq) {
 		})
 		HandleError(err, "Cannot encode JSON", false)
 		time.Sleep(time.Microsecond)
-		res, err1 := rmqConn.SendMessage(message, "ConvertDWG")
+		res, err1 := rmq.SendMessage(message, "ConvertDWG")
 		HandleError(err1, "message sending error", false)
 		config.Logger.Log.Info(res)
 	}
+	fmt.Println(mess)
 }
+
+func Pooling(rmqConn queue.Rabbitmq) {
+	mess, _ := json.Marshal(globalUtils.DbQuery{
+		Schema:"dwg_transformer",
+		Table:  "Attachments",
+		CrudT:  "retrieve",
+		Id: []int{},
+		ORMKeyVal: map[string]interface{}{
+			"status" : 0,
+		},
+	})
+	rmqConn.SendMessage(mess, "Dal_Req")
+	}

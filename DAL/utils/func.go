@@ -2,19 +2,14 @@ package utils
 
 import (
 	"dal/config"
+	"dal/model"
 	"encoding/json"
 	"fmt"
-	"github.com/jinzhu/gorm"
 	"github.com/streadway/amqp"
 	"github.com/yossefazoulay/go_utils/queue"
 	globalUtils "github.com/yossefazoulay/go_utils/utils"
 	"os"
 )
-
-type cDb struct {
-	*gorm.DB
-}
-
 
 func HandleError(err error, msg string, exit bool) {
 	if err != nil {
@@ -25,33 +20,43 @@ func HandleError(err error, msg string, exit bool) {
 	}
 }
 
+
+
+
 func MessageReceiver(m amqp.Delivery, rmq queue.Rabbitmq)  {
 	dbQ := unpackMessage(m)
 	dbconf := config.GetDBConf(dbQ.Schema)
-	db := ConnectToDb(dbconf.Dialect, dbconf.ConnString)
-
+	db := model.ConnectToDb(dbconf.Dialect, dbconf.ConnString)
+	res := dispatcher(db, dbQ)
+	rmq.SendMessage(res, "Dal_Res")
 	defer db.Close()
 }
+
+func dispatcher(db *model.CDb, dbQ *globalUtils.DbQuery ) []byte {
+	switch dbQ.CrudT {
+	case "retrieve":
+		res := db.Retrieve(dbQ)
+		return res
+	case "update":
+		db.Update(dbQ)
+		return []byte{}
+	default:
+		config.Logger.Log.Error("CRUD operation must be one of the following : retrieve, update | delete and create not supported yet")
+		return []byte{}
+	}
+
+}
+
 
 func unpackMessage(m amqp.Delivery) *globalUtils.DbQuery {
 	dbQ := &globalUtils.DbQuery{}
 	err := json.Unmarshal(m.Body, dbQ)
+	if err := m.Ack(false); err != nil {
+		config.Logger.Log.Error("Error acknowledging message : %s", err)
+	}
 	HandleError(err, "Error decoding DB message", false)
 	return dbQ
 }
 
-func ConnectToDb(dialect string, connString string) *cDb {
-	db, err := gorm.Open(dialect, connString)
-	HandleError(err, "Error connecting to db", err != nil)
-	db.DB()
-	db.DB().Ping()
-	var dup = cDb{ db}
-	return &dup
-}
 
-func (db cDb) Retrieve(tableName string, query string, val string) {
-	atts :=  config.GetTableStruct(tableName)
-	db.Where(query, val).Find(&atts)
-	db.GetErrors()
-}
 //"mysql", "root:Dev123456!@(localhost)/dwg_transformer?charset=utf8&parseTime=True&loc=Local"

@@ -3,10 +3,10 @@
     "Rabbitmq" : {
       "ConnString" : "amqp://guest:guest@localhost:5672/",
       "QueueNames" : [
-        "ConvertedDWG", "CheckedDWG", "ConvertDWG", "CheckDWG"
+        "ConvertedDWG", "CheckedDWG", "ConvertDWG", "CheckDWG", "Dal_Res", "Dal_Req"
       ],
       "Listennig" : [
-        "ConvertedDWG", "CheckedDWG"
+        "ConvertedDWG", "CheckedDWG", "Dal_Res"
       ]
     }
   },

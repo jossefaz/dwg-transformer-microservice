@@ -3,8 +3,33 @@
     "Rabbitmq" : {
       "ConnString" : "amqp://guest:guest@localhost:5672/",
       "QueueNames" : [
-        "ConvertDWG", "CheckDWG"
-      ]
+        "Dal_Req", "Dal_Res"
+      ],
+      "Listennig" : [
+        "Dal_Req", "Dal_Res"
+      ],
+      "Result" : {
+        "Success" : "Dal_Res",
+        "Fail" : "Dal_Res",
+        "From" : "DAL"
+      }
+    }
+  },
+  "Logs" : {
+    "Main" : {
+      "Path" : "shared/DAL.log",
+      "Level" : "DEBUG"
+    }
+  },
+  "DB" :  {
+    "Mysql" : {
+      "Schema" : {
+        "dwg_transformer" : {
+          "ConnString" :  "root:Dev123456!@(localhost)/dwg_transformer?charset=utf8&parseTime=True&loc=Local",
+          "Name" : "dwg_transformer",
+          "Dialect" : "mysql"
+        }
+      }
     }
   }
 }

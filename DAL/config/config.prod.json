@@ -3,15 +3,15 @@
     "Rabbitmq" : {
       "ConnString" : "amqp://guest:guest@rabbitmq?connection_attempts=5&retry_delay=5",
       "QueueNames" : [
-        "ConvertDWG", "ConvertedDWG"
+        "Dal_Req", "Dal_Res"
       ],
       "Listennig" : [
-        "ConvertDWG"
+        "Dal_Req", "Dal_Res"
       ],
       "Result" : {
-        "Success" : "ConvertedDWG",
-        "Fail" : "ConvertedDWG",
-        "From" : "Transformer"
+        "Success" : "Dal_Res",
+        "Fail" : "Dal_Res",
+        "From" : "DAL"
       }
     }
   },
