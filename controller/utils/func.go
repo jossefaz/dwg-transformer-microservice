@@ -19,7 +19,7 @@ func HandleError(err error, msg string, exit bool) {
 	}
 }
 
-func MessageReceiver(m amqp.Delivery, rmq queue.Rabbitmq)  {
+func MessageReceiver(m amqp.Delivery, rmq *queue.Rabbitmq)  {
 	switch m.Headers["From"] {
 	case "Transformer":
 		getMessageFromTransformer(m, rmq)
@@ -43,7 +43,7 @@ func unpackFileMessage(m amqp.Delivery) *globalUtils.PickFile{
 	return pFIle
 }
 
-func getMessageFromTransformer(m amqp.Delivery, rmq queue.Rabbitmq) {
+func getMessageFromTransformer(m amqp.Delivery, rmq *queue.Rabbitmq) {
 	pFIle := unpackFileMessage(m)
 	log:= config.Logger.Log
 	if pFIle.Result["Transform"] == 1 {
@@ -66,7 +66,7 @@ func getMessageFromWorker(m amqp.Delivery) {
 	config.Logger.Log.Info("FROM WORKER :" + pFIle.Path + "")
 }
 
-func PoolReceiver(m amqp.Delivery, rmq queue.Rabbitmq) {
+func PoolReceiver(m amqp.Delivery, rmq *queue.Rabbitmq) {
 	type Timestamp time.Time
 	type attachements struct {
 		Reference int

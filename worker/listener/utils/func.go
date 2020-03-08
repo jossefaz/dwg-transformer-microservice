@@ -21,7 +21,7 @@ func HandleError(err error, msg string, exit bool) {
 	}
 }
 
-func MessageReceiver(m amqp.Delivery, rmq queue.Rabbitmq)  {
+func MessageReceiver(m amqp.Delivery, rmq *queue.Rabbitmq)  {
 	if err := m.Ack(false); err != nil {
 		config.Logger.Log.Error(fmt.Sprintf("Error acknowledging message : %s", err))
 	} else {

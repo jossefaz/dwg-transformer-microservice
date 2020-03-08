@@ -23,7 +23,7 @@ func HandleError(err error, msg string, exit bool) {
 	}
 }
 
-func MessageReceiver(m amqp.Delivery, rmq queue.Rabbitmq)  {
+func MessageReceiver(m amqp.Delivery, rmq *queue.Rabbitmq)  {
 	resultConfig := getResultConfig()
 	log := config.Logger.Log
 	pFIle := &globalUtils.PickFile{}
