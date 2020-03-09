@@ -6,6 +6,6 @@ require (
 	github.com/ghodss/yaml v1.0.0 // indirect
 	github.com/streadway/amqp v0.0.0-20200108173154-1c71cc93ed71
 	github.com/tkanos/gonfig v0.0.0-20181112185242-896f3d81fadf
-	github.com/yossefazoulay/go_utils v0.0.0-20200309082032-38efe2e9071f
+	github.com/yossefazoulay/go_utils v0.0.0-20200309101634-5f2f1b588e41
 	gopkg.in/yaml.v2 v2.2.8 // indirect
 )

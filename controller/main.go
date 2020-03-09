@@ -31,7 +31,7 @@ func main() {
 
 }
 
-func scheduler(tick *time.Ticker, done chan bool, rmqConn queue.Rabbitmq) {
+func scheduler(tick *time.Ticker, done chan bool, rmqConn *queue.Rabbitmq) {
 	task(rmqConn, time.Now())
 	for {
 		select {
@@ -43,6 +43,6 @@ func scheduler(tick *time.Ticker, done chan bool, rmqConn queue.Rabbitmq) {
 	}
 }
 
-func task(rmqConn queue.Rabbitmq, t time.Time) {
+func task(rmqConn *queue.Rabbitmq, t time.Time) {
 	utils.Pooling(rmqConn)
 }

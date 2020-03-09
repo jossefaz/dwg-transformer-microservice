@@ -6,7 +6,7 @@
         "Dal_Req", "Dal_Res"
       ],
       "Listennig" : [
-        "Dal_Req", "Dal_Res"
+        "Dal_Req"
       ],
       "Result" : {
         "Success" : "Dal_Res",

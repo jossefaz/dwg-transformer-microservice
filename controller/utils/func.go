@@ -97,7 +97,7 @@ func PoolReceiver(m amqp.Delivery, rmq *queue.Rabbitmq) {
 	fmt.Println(mess)
 }
 
-func Pooling(rmqConn queue.Rabbitmq) {
+func Pooling(rmqConn *queue.Rabbitmq) {
 	mess, _ := json.Marshal(globalUtils.DbQuery{
 		Schema:"dwg_transformer",
 		Table:  "Attachments",
