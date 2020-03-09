@@ -75,11 +75,12 @@ func PoolReceiver(m amqp.Delivery, rmq *queue.Rabbitmq) {
 		Path string
 	}
 	log := config.Logger.Log
-	res := []attachements{}
-	mess := json.Unmarshal(m.Body, &res)
 	if err := m.Ack(false); err != nil {
 		log.Error("Error acknowledging message : %s", err)
 	}
+	res := []attachements{}
+	mess := json.Unmarshal(m.Body, &res)
+
 	for _, file := range res {
 		message, err := json.Marshal(globalUtils.PickFile{
 			Path: file.Path,
