@@ -5,6 +5,7 @@ import (
 	"dal/log"
 	"dal/model"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"github.com/streadway/amqp"
 	"github.com/yossefazoulay/go_utils/queue"
@@ -27,23 +28,33 @@ func HandleError(err error, msg string, exit bool) {
 func MessageReceiver(m amqp.Delivery, rmq *queue.Rabbitmq)  {
 	dbQ := unpackMessage(m)
 	dbconf := config.GetDBConf(dbQ.Schema)
-	db := model.ConnectToDb(dbconf.Dialect, dbconf.ConnString)
-	res := dispatcher(db, dbQ)
-	rmq.SendMessage(res, "Dal_Res", "DAL")
+	db, err := model.ConnectToDb(dbconf.Dialect, dbconf.ConnString)
+	HandleError(err, "cannot connect to DB", err!=nil)
+	res, err := dispatcher(db, dbQ)
+	if err != nil {
+		log.Logger.Log.Error(err)
+	} else {
+		rmq.SendMessage(res, "Dal_Res", "DAL")
+	}
 	defer db.Close()
 }
 
-func dispatcher(db *model.CDb, dbQ *globalUtils.DbQuery ) []byte {
+func dispatcher(db *model.CDb, dbQ *globalUtils.DbQuery ) ([]byte, error) {
 	switch dbQ.CrudT {
 	case "retrieve":
-		res := db.Retrieve(dbQ)
-		return res
+		res, err := db.Retrieve(dbQ)
+		if err != nil {
+			return nil, err
+		}
+		return res, nil
 	case "update":
-		db.Update(dbQ)
-		return []byte{}
+		res, err := db.Update(dbQ)
+		if err != nil {
+			return nil, err
+		}
+		return res, nil
 	default:
-		log.Logger.Log.Error("CRUD operation must be one of the following : retrieve, update | delete and create not supported yet")
-		return []byte{}
+		return nil, errors.New("CRUD operation must be one of the following : retrieve, update | delete and create not supported yet")
 	}
 
 }

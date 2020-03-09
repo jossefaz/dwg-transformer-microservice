@@ -74,8 +74,13 @@ func getMessageFromWorker(m amqp.Delivery, rmq *queue.Rabbitmq) {
 			"status" : 1,
 		},
 	})
-	rmq.SendMessage(mess, Constant.Channels.Dal_Req, Constant.From)
-	config.Logger.Log.Info("FROM WORKER :" + pFIle.Path + "")
+	message, err := rmq.SendMessage(mess, Constant.Channels.Dal_Req, Constant.From)
+	if err != nil {
+		config.Logger.Log.Error(err)
+	} else {
+		config.Logger.Log.Info(message)
+	}
+
 }
 
 func PoolReceiver(m amqp.Delivery, rmq *queue.Rabbitmq) {
@@ -115,7 +120,7 @@ func Pooling(rmqConn *queue.Rabbitmq) {
 		Schema:"dwg_transformer",
 		Table:  "Attachments",
 		CrudT:  "retrieve",
-		Id: []int{},
+		Id: map[string]interface{}{},
 		ORMKeyVal: map[string]interface{}{
 			"status" : 0,
 		},

@@ -3,7 +3,6 @@ package model
 import (
 	"encoding/json"
 	"fmt"
-	"strings"
 )
 
 type Attachements struct {
@@ -17,22 +16,22 @@ func (Attachements) TableName() string {
 	return "Attachements"
 }
 
-func Att_Retrieve(db *CDb, keyval map[string]interface{}) []byte{
+func Att_Retrieve(db *CDb, keyval map[string]interface{}) ([]byte, error){
 	atts :=  []Attachements{}
-	db.Where(keyval).Find(&atts)
-	db.GetErrors()
+	errors := db.Where(keyval).Find(&atts).GetErrors()
+	err := HandleDBErrors(errors)
+	if err != nil {
+		return nil, err
+	}
 	b, _ := json.Marshal(atts)
-	return b
+	return b, nil
 }
 
-func Att_Update(db *CDb, where map[string]interface{}, update map[string]interface{}) []byte{
+func Att_Update(db *CDb, where map[string]interface{}, update map[string]interface{}) ([]byte, error){
 	errors := db.Model(Attachements{}).Where(where).Updates(update).GetErrors()
-	if len(errors) > 0 {
-		var b1 strings.Builder
-		for _, err := range errors {
-			b1.WriteString(fmt.Sprintln(err))
-		}
-		return []byte(b1.String())
+	err := HandleDBErrors(errors)
+	if err != nil {
+		return nil, err
 	}
-	return []byte(fmt.Sprintf(string(db.RowsAffected), " rows were updated"))
+	return []byte(fmt.Sprintf(string(db.RowsAffected), " rows were updated")), nil
 }
