@@ -27,7 +27,7 @@ func HandleError(err error, msg string, exit bool) {
 
 func MessageReceiver(m amqp.Delivery, rmq *queue.Rabbitmq)  {
 	dbQ := unpackMessage(m)
-	dbconf := config.GetDBConf(dbQ.Schema)
+	dbconf := config.GetDBConf(dbQ.DbType, dbQ.Schema)
 	db, err := model.ConnectToDb(dbconf.Dialect, dbconf.ConnString)
 	HandleError(err, "cannot connect to DB", err!=nil)
 	res, err := dispatcher(db, dbQ)

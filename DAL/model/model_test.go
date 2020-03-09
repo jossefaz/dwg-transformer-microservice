@@ -7,6 +7,7 @@ import (
 )
 
 var datbaseQuery  = globalUtils.DbQuery {
+	DbType: "mysql",
 	Id: map[string]interface{}{
 		"reference" : 5,
 	},

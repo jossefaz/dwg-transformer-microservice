@@ -64,6 +64,7 @@ func getMessageFromTransformer(m amqp.Delivery, rmq *queue.Rabbitmq) {
 func getMessageFromWorker(m amqp.Delivery, rmq *queue.Rabbitmq) {
 	pFIle := unpackFileMessage(m)
 	mess, _ := json.Marshal(globalUtils.DbQuery{
+		DbType: "mysql",
 		Schema:"dwg_transformer",
 		Table:  "Attachments",
 		CrudT:  "update",
@@ -117,6 +118,7 @@ func PoolReceiver(m amqp.Delivery, rmq *queue.Rabbitmq) {
 
 func Pooling(rmqConn *queue.Rabbitmq) {
 	mess, _ := json.Marshal(globalUtils.DbQuery{
+		DbType: "mysql",
 		Schema:"dwg_transformer",
 		Table:  "Attachments",
 		CrudT:  "retrieve",
