@@ -16,7 +16,7 @@ func main() {
 
 	defer rmqConn.Conn.Close()
 	defer rmqConn.ChanL.Close()
-	go rmqConn.OpenListening(queueConf.Listennig, utils.MessageReceiver)
+	rmqConn.OpenListening(queueConf.Listennig, utils.MessageReceiver)
 
 
 

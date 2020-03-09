@@ -20,7 +20,7 @@ func main() {
 	utils.HandleError(err, "Error Occured when RabbitMQ Init", err != nil)
 	defer rmqConn.Conn.Close()
 	defer rmqConn.ChanL.Close()
-	go rmqConn.OpenListening(queueConf.Listennig, utils.MessageReceiver)
+	rmqConn.OpenListening(queueConf.Listennig, utils.MessageReceiver)
 
 
 }
