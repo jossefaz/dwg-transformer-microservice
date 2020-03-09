@@ -12,3 +12,8 @@ def list_files(startpath):
         level = root.replace(startpath, '').count(os.sep)
         indent = ' ' * 4 * (level)
         print('{}{}/'.format(indent, os.path.basename(root)))
+
+def file_exists(file) :
+    if Path(file).is_file():
+        return True
+    return False

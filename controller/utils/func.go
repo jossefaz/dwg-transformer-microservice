@@ -51,6 +51,7 @@ func getMessageFromTransformer(m amqp.Delivery, rmq *queue.Rabbitmq) {
 			"BorderExist" : 0,
 			"InsideJer" : 0,
 		}
+
 		mess, err := json.Marshal(pFIle)
 		HandleError(err, "cannot convert transformed pFile to Json", false)
 		res, err1 := rmq.SendMessage(mess, Constant.Channels.CheckDWG, Constant.From)
@@ -86,7 +87,7 @@ func getMessageFromWorker(m amqp.Delivery, rmq *queue.Rabbitmq) {
 
 func PoolReceiver(m amqp.Delivery, rmq *queue.Rabbitmq) {
 	type Timestamp time.Time
-	type attachements struct {
+	type Attachements struct {
 		Reference int
 		Status int
 		StatusDate Timestamp
@@ -96,9 +97,12 @@ func PoolReceiver(m amqp.Delivery, rmq *queue.Rabbitmq) {
 	if err := m.Ack(false); err != nil {
 		log.Error("Error acknowledging message : %s", err)
 	}
-	res := []attachements{}
-	mess := json.Unmarshal(m.Body, &res)
-
+	res := []Attachements{}
+	err := json.Unmarshal(m.Body, &res)
+	if err != nil {
+		fmt.Println(err)
+		config.Logger.Log.Error(err)
+	}
 	for _, file := range res {
 		message, err := json.Marshal(globalUtils.PickFile{
 			Id: file.Reference,
@@ -113,7 +117,6 @@ func PoolReceiver(m amqp.Delivery, rmq *queue.Rabbitmq) {
 		HandleError(err1, "message sending error", false)
 		config.Logger.Log.Info(res)
 	}
-	fmt.Println(mess)
 }
 
 func Pooling(rmqConn *queue.Rabbitmq) {

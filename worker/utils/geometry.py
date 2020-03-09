@@ -4,16 +4,27 @@ from functools import partial
 import shapely.wkt as wktload
 from shapely.ops import transform
 from shapely.geometry import Point, LineString, MultiPolygon
+
+from worker.utils import ogr2ogr
 from worker.utils.projections import *
 from worker.utils.path import *
 import os
 
-def getTransformer(fromCRS, toCRS):
-    project = partial(pyproj.transform,fromCRS, toCRS)
+
+def get_transformer(from_crs, to_crs):
+    project = partial(pyproj.transform, from_crs, to_crs)
     return project
 
-def getJerusalemBorder() :
-    project = getTransformer(projections['wgs84'], projections['israel'])
+
+def dxf_to_geojson(dxf):
+    basename = os.path.basename(dxf).split('.')[0]
+    outfile = "{}.json".format(basename)
+    ogr2ogr.main(["", "-f", "GeoJson", outfile, dxf])
+    return outfile
+
+
+def get_jerusalem_border():
+    project = get_transformer(projections['wgs84'], projections['israel'])
     jerusalem_polygon = []
     work_file = os.path.join(GetParentDir(os.path.dirname(__file__)), 'ressource/border2.csv')
     polylist = list(csv.reader(open(work_file, 'r'), delimiter='|'))
@@ -22,5 +33,3 @@ def getJerusalemBorder() :
         converted = transform(project, polygon)
         jerusalem_polygon.append(converted)
     return jerusalem_polygon
-
-

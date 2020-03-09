@@ -72,6 +72,7 @@ func setResult(pfile *globalUtils.PickFile, path string, error bool)[]byte {
 		keys = append(keys, k)
 	}
 	mess, err := globalUtils.SetResultMessage(pfile, keys, []int {execRes}, path)
+
 	if err != nil {
 		HandleError(err, "Cannot set output and cannot run command :" + err.Error() + err.Error(), false)
 	}
