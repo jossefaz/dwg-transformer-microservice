@@ -3,8 +3,8 @@ import sys
 import json
 
 from utils.io import oprint, eprint
-from worker.utils.path import file_exists
-from worker.registry.check_geofile import REGISTRY
+from utils.path import file_exists
+from registry.check_geofile import REGISTRY
 
 
 def main():

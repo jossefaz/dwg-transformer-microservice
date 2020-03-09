@@ -1,13 +1,15 @@
+import collections
 import csv
 from functools import partial
 
+import pyproj
 import shapely.wkt as wktload
 from shapely.ops import transform
 from shapely.geometry import Point, LineString, MultiPolygon
 
-from worker.utils import ogr2ogr
-from worker.utils.projections import *
-from worker.utils.path import *
+from utils import ogr2ogr
+from utils.projections import *
+from utils.path import *
 import os
 
 
@@ -33,3 +35,20 @@ def get_jerusalem_border():
         converted = transform(project, polygon)
         jerusalem_polygon.append(converted)
     return jerusalem_polygon
+
+def line_is_closed(xy_list) :
+    # xy_dict = {}
+    # for xy in xy_list :
+    #     if len(xy == 2) :
+    #         if xy[0] in xy_dict :
+    #             xy_dict[xy[0]]
+
+
+    return True
+
+def inside_polygon(polygon, feature) :
+    return True
+
+def InsideJer(xy_list) :
+    return True
+

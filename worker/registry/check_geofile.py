@@ -1,5 +1,7 @@
-from worker.utils.file import check_key_pair
+from utils.file import check_key_pair
+from utils.geometry import InsideJer
 
 REGISTRY = {
-    "border": check_key_pair
+    "BorderExist": check_key_pair,
+    "InsideJer" : InsideJer
 }
