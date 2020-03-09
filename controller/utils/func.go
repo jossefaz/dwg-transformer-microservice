@@ -24,7 +24,7 @@ func MessageReceiver(m amqp.Delivery, rmq *queue.Rabbitmq)  {
 	case "Transformer":
 		getMessageFromTransformer(m, rmq)
 	case "Worker" :
-		getMessageFromWorker(m)
+		getMessageFromWorker(m, rmq)
 	case "DAL":
 		PoolReceiver(m, rmq)
 	default:
@@ -61,8 +61,20 @@ func getMessageFromTransformer(m amqp.Delivery, rmq *queue.Rabbitmq) {
 	}
 }
 
-func getMessageFromWorker(m amqp.Delivery) {
+func getMessageFromWorker(m amqp.Delivery, rmq *queue.Rabbitmq) {
 	pFIle := unpackFileMessage(m)
+	mess, _ := json.Marshal(globalUtils.DbQuery{
+		Schema:"dwg_transformer",
+		Table:  "Attachments",
+		CrudT:  "update",
+		Id: map[string]interface{}{
+			"reference" : pFIle.Id,
+		},
+		ORMKeyVal: map[string]interface{}{
+			"status" : 1,
+		},
+	})
+	rmq.SendMessage(mess, Constant.Channels.Dal_Req, Constant.From)
 	config.Logger.Log.Info("FROM WORKER :" + pFIle.Path + "")
 }
 
@@ -83,6 +95,7 @@ func PoolReceiver(m amqp.Delivery, rmq *queue.Rabbitmq) {
 
 	for _, file := range res {
 		message, err := json.Marshal(globalUtils.PickFile{
+			Id: file.Reference,
 			Path: file.Path,
 			Result : map[string]int{
 				"Transform" : 0,

@@ -43,6 +43,6 @@ func (db *CDb) Retrieve( dbQ *globalUtils.DbQuery ) []byte{
 func (db *CDb) Update( dbQ *globalUtils.DbQuery ) {
 	switch dbQ.Table {
 	case "Attachments":
-		Att_Retrieve(db, dbQ.ORMKeyVal)
+		Att_Update(db, dbQ.Id, dbQ.ORMKeyVal)
 	}
 }
