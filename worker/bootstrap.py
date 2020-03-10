@@ -4,7 +4,7 @@ import json
 
 from utils.io import oprint, eprint
 from utils.path import file_exists
-from utils.file import json_from_file
+from utils.file import json_from_file, dict_from_geojson
 
 from registry.check_geofile import REGISTRY
 
@@ -15,6 +15,12 @@ def main():
     if exist:
         geojson = json_from_file(sys.argv[1])
         if geojson :
+            geojson_dict = dict_from_geojson(geojson)
+            if geojson_dict :
+                print(geojson_dict)
+            else :
+                raise RuntimeError("cannot convert geojson to dict (error in json loading) : {}".format(geojson))
+
             # with open(geojson, 'r') as f:
             #     try:
             #         checks = sys.argv[2].split()

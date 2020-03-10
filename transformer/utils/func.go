@@ -52,7 +52,7 @@ func getResultConfig() globalUtils.Result {
 func execute(pfile *globalUtils.PickFile, output string) ([]byte, error){
 	outpath, convert := getOutputPath(pfile.Path, output)
 	if convert {
-		cmd := exec.Command("dwgread", pfile.Path, "-O", output, "-o", outpath)
+		cmd := exec.Command("dwg2dxf", pfile.Path, "-O", output, "-o", outpath)
 		err := cmd.Run()
 		if err != nil {
 			return setResult(pfile, pfile.Path, true), err

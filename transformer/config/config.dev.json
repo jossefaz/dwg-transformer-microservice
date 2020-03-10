@@ -15,7 +15,7 @@
       }
     }
   },
-  "OutputFormat" : "GeoJSON",
+  "OutputFormat" : "dxf",
   "FileExtensions" : {
     "GeoJSON" : ".json",
     "dxf" : ".dxf"
