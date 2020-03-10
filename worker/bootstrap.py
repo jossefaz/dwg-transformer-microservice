@@ -17,9 +17,11 @@ def main():
         if geojson :
             geojson_dict = dict_from_geojson(geojson)
             if geojson_dict :
+
                 print(geojson_dict)
             else :
                 raise RuntimeError("cannot convert geojson to dict (error in json loading) : {}".format(geojson))
+            del geojson, geojson_dict
 
             # with open(geojson, 'r') as f:
             #     try:

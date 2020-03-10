@@ -12,7 +12,7 @@ def border_exists(geojson_dict) :
 
 def dict_from_geojson(jsonfile) :
     try :
-        converted_json = pd.read_json(jsonfile)
+        converted_json = pd.read_json(jsonfile).to_dict()
         return converted_json
     except Exception as e:
         print(str(e))
