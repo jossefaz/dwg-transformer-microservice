@@ -3,12 +3,22 @@ import geojson
 import pandas as pd
 
 from utils.geometry import dxf_to_geojson
-def check_key_pair(k, v, dict_to_check):
-    return (k, v) in dict_to_check.viewitems()
+def check_key_pair(searched_key, searched_val, dict_to_check):
+    for key, val in dict_to_check.items() :
+        if key == searched_key and val == searched_val :
+            return True
+        if isinstance(val, dict) :
+            if check_key_pair(searched_key, searched_val, val) :
+                return True
+
+
+
 
 def border_exists(geojson_dict) :
+    return check_key_pair("Layer", "Border", geojson_dict)
 
-    return True
+
+
 
 def dict_from_geojson(jsonfile) :
     try :
