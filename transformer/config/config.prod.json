@@ -15,10 +15,10 @@
       }
     }
   },
-  "OutputFormat" : "dxf",
+  "OutputFormat" : "DXF",
   "FileExtensions" : {
     "GeoJSON" : ".json",
-    "dxf" : ".dxf"
+    "DXF" : ".dxf"
   },
   "Logs" : {
     "Main" : {
