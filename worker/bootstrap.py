@@ -27,10 +27,10 @@ def main():
                 for check in checks:
                     if REGISTRY[check]["return"] :
                         target = REGISTRY[check]["func"](target)
-                        mainStore.set_result(check, bool(target))
+                        mainStore.set_result(check, int(bool(target)))
                     else :
                         res = REGISTRY[check]["func"](target)
-                        mainStore.set_result(check, bool(res))
+                        mainStore.set_result(check, int(bool(res)))
             else :
                 raise RuntimeError("cannot convert geojson to dict (error in json loading) : {}".format(geojson))
             rm_file(geojson)

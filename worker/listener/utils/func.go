@@ -34,16 +34,7 @@ func MessageReceiver(m amqp.Delivery, rmq *queue.Rabbitmq)  {
 	}
 }
 
-func convertMapToString(customMap map[string]int) string {
-	var b bytes.Buffer
 
-	for k,v := range customMap {
-		s := fmt.Sprintf("%s=\"%v\"", k, v)
-		b.WriteString(s)
-	}
-	return b.String()
-
-}
 
 func convertMapKeysToString(customMap map[string]int) string {
 	var b bytes.Buffer
@@ -56,27 +47,25 @@ func convertMapKeysToString(customMap map[string]int) string {
 
 }
 func execute(pfile *globalUtils.PickFile) []byte{
-	cmd := exec.Command("python", "bootstrap.py", pfile.Path, convertMapToString(pfile.Result))
-	err := cmd.Run()
+	cmd := exec.Command("python", "bootstrap.py", pfile.Path, convertMapKeysToString(pfile.Result))
+	out, err := cmd.CombinedOutput()
 	if err != nil {
 		HandleError(err, "cannot execute python", false)
-		return setResult(pfile, pfile.Path, []int{0, 0})
 	}
-
-	resultMap := make(map[string]interface{})
-	return setResult(pfile, pfile.Path,  []int{1,1})
+	return setResult(pfile, out)
 }
 
-func setResult(pfile *globalUtils.PickFile, path string,  result[]int)[]byte {
-	keys := make([]string, 0, len(pfile.Result))
-	for k := range pfile.Result {
-		keys = append(keys, k)
+func setResult(pfile *globalUtils.PickFile, cmdRes []byte)[]byte {
+	resMap := make(map[string]int)
+	err := json.Unmarshal(cmdRes, &resMap)
+	for k, v := range resMap {
+		pfile.Result[k] = v
 	}
-	mess, err := globalUtils.SetResultMessage(pfile, keys, result, path)
+	res, err := json.Marshal(pfile)
 	if err != nil {
 		HandleError(err, "Cannot set output and cannot run command :" + err.Error() + err.Error(), false)
 	}
-	return mess
+	return res
 }
 func getResultConfig() globalUtils.Result {
 	return config.LocalConfig.Queue.Rabbitmq.Result
