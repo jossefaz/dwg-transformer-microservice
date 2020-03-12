@@ -60,6 +60,8 @@ github.com/yossefazoulay/go_utils v0.0.0-20200309130219-c820abb0c122 h1:82EoWwKu
 github.com/yossefazoulay/go_utils v0.0.0-20200309130219-c820abb0c122/go.mod h1:ucV4wyWrZXmLM1Y8J/xEjYE1Ho7kt+wYNwWEx4vL13E=
 github.com/yossefazoulay/go_utils v0.0.0-20200309140142-71092d26bf68 h1:GgWU2wIWQIHnYcq0M9hwLMN/3sJ/cwhkRdbGp8xDm64=
 github.com/yossefazoulay/go_utils v0.0.0-20200309140142-71092d26bf68/go.mod h1:ucV4wyWrZXmLM1Y8J/xEjYE1Ho7kt+wYNwWEx4vL13E=
+github.com/yossefazoulay/go_utils v0.0.0-20200312115127-c84c131428ce h1:+bnLzOIbT1Hl690/Y6VX0kKGen9KXGqML/xrxPlv00I=
+github.com/yossefazoulay/go_utils v0.0.0-20200312115127-c84c131428ce/go.mod h1:ucV4wyWrZXmLM1Y8J/xEjYE1Ho7kt+wYNwWEx4vL13E=
 golang.org/x/crypto v0.0.0-20190308221718-c2843e01d9a2/go.mod h1:djNgcEr1/C05ACkg1iLfiJU5Ep61QUkGW8qpdssI0+w=
 golang.org/x/crypto v0.0.0-20190325154230-a5d413f7728c/go.mod h1:djNgcEr1/C05ACkg1iLfiJU5Ep61QUkGW8qpdssI0+w=
 golang.org/x/crypto v0.0.0-20191205180655-e7c4368fe9dd h1:GGJVjV8waZKRHrgwvtH66z9ZGVurTD1MT0n1Bb+q4aM=
