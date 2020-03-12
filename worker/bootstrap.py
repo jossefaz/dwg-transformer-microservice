@@ -1,3 +1,5 @@
+import os
+
 from shapely.geometry import Point
 import sys
 import json
@@ -8,29 +10,31 @@ from utils.file import json_from_file, dict_from_geojson, border_exists
 
 from registry.check_geofile import REGISTRY
 
+from utils.file import rm_file
+from Store.main import Store
+
 
 def main():
     exist = file_exists(sys.argv[1])
-
+    mainStore = Store.get_instance()
     if exist:
         geojson = json_from_file(sys.argv[1])
         if geojson :
             geojson_dict = dict_from_geojson(geojson)
             if geojson_dict :
-                border = border_exists(geojson_dict)
-                print(border)
+                checks = sys.argv[2].split()
+                target = geojson_dict
+                for check in checks:
+                    if REGISTRY[check]["return"] :
+                        target = REGISTRY[check]["func"](target)
+                        mainStore.set_result(check, bool(target))
+                    else :
+                        res = REGISTRY[check]["func"](target)
+                        mainStore.set_result(check, bool(res))
             else :
                 raise RuntimeError("cannot convert geojson to dict (error in json loading) : {}".format(geojson))
-            del geojson, geojson_dict
-
-            # with open(geojson, 'r') as f:
-            #     try:
-            #         checks = sys.argv[2].split()
-            #         for check in checks:
-            #             REGISTRY[check](sys.argv[1])
-            #     except Exception as e:
-            #         eprint("cannot convert args to json object :", str(e), sys.argv[2])
-            print("OPENED")
+            rm_file(geojson)
+            print(mainStore.store)
         else :
             raise FileNotFoundError("cannot convert file to geojson : {}".format(sys.argv[1]))
     else :

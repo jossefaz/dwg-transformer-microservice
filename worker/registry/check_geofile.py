@@ -1,7 +1,13 @@
-from utils.file import check_key_pair
+from utils.file import border_exists
 from utils.geometry import InsideJer
 
 REGISTRY = {
-    "BorderExist": check_key_pair,
-    "InsideJer" : InsideJer
+    "BorderExist": {
+        "func": border_exists,
+        "return": True
+    },
+    "InsideJer": {
+        "func": InsideJer,
+        "return": False
+    }
 }

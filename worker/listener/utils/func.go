@@ -62,6 +62,8 @@ func execute(pfile *globalUtils.PickFile) []byte{
 		HandleError(err, "cannot execute python", false)
 		return setResult(pfile, pfile.Path, []int{0, 0})
 	}
+
+	resultMap := make(map[string]interface{})
 	return setResult(pfile, pfile.Path,  []int{1,1})
 }
 
