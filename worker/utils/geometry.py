@@ -1,4 +1,4 @@
-import collections
+
 import csv
 from functools import partial
 

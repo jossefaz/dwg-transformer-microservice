@@ -1,8 +1,5 @@
-import json
 import os
 from pathlib import Path
-
-import geojson
 import pandas as pd
 
 from utils.geometry import dxf_to_geojson

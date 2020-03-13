@@ -10,37 +10,34 @@ RUN go get -d -v ./... && \
     CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o /go/bin/main
 
 
-FROM osgeo/gdal:ubuntu-full-latest as venvbuilder
-RUN apt update && \
-    apt -y install python3-virtualenv
+FROM osgeo/gdal:alpine-normal-latest as geobuild
 
-ENV VIRTUAL_ENV=./venv
-RUN python3 -m virtualenv --python=/usr/bin/python3 $VIRTUAL_ENV
-ENV PATH="$VIRTUAL_ENV/bin:$PATH"
+ENV PYTHON_PACKAGES="\
+    pyproj Shapely pandas pika "
 
-# Install dependencies:
-COPY requirements.txt .
-RUN pip install -r requirements.txt
+RUN apk add --no-cache --virtual build-dependencies \
+    && apk add --virtual build-runtime build-base python3-dev openblas-dev freetype-dev pkgconfig gfortran \
+    && ln -s /usr/include/locale.h /usr/include/xlocale.h \
+    && python3 -m ensurepip \
+    && rm -r /usr/lib/python*/ensurepip \
+    && pip3 install --upgrade pip setuptools \
+    && ln -sf /usr/bin/python3 /usr/bin/python \
+    && ln -sf pip3 /usr/bin/pip \
+    && rm -r /root/.cache \
+    && pip install --no-cache-dir $PYTHON_PACKAGES \
+    && apk add --no-cache --virtual build-dependencies $PACKAGES \
+    && rm -rf /var/cache/apk/*
 
-FROM osgeo/gdal:ubuntu-small-latest
+FROM osgeo/gdal:alpine-normal-latest
+
+COPY --from=geobuild /usr/lib/python3.8 ./usr/lib/python3.8
 
 WORKDIR /app
 
-RUN apt update && \
-    apt -y install python3-virtualenv
-
-RUN mkdir -p shared/logs config && \
-    chmod 777 shared
-
-ENV VIRTUAL_ENV=./venv
-RUN python3 -m virtualenv --python=/usr/bin/python3 $VIRTUAL_ENV
-ENV PATH="$VIRTUAL_ENV/bin:$PATH"
-
-COPY --from=venvbuilder ./venv ./venv
 COPY ./utils ./utils
 COPY ./resource ./resource
 COPY ./registry ./registry
-
+COPY ./Store ./Store
 COPY --from=gobuilder /go/bin/main .
 COPY ./listener/config/*.json ./config/
 
