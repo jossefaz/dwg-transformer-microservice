@@ -7,9 +7,10 @@ import (
 	"github.com/streadway/amqp"
 	"github.com/yossefazoulay/go_utils/queue"
 	globalUtils "github.com/yossefazoulay/go_utils/utils"
+	"listener/config"
 	"os"
 	"os/exec"
-	"listener/config"
+	"strings"
 )
 
 func HandleError(err error, msg string, exit bool) {
@@ -60,8 +61,7 @@ func convertMapKeysToString(customMap map[string]int) string {
 func execute(pfile *globalUtils.PickFile) ([]byte, error){
 	checks := convertMapKeysToString(pfile.Result)
 	config.Logger.Log.Debug("SEND CHECKS ", fmt.Sprintf(` "%s" `, checks) )
-
-	cmd := exec.Command("python", "bootstrap.py", pfile.Path, checks)
+	cmd := exec.Command("../venv/bin/python", "../bootstrap.py", pfile.Path, checks)
 	out, err := cmd.CombinedOutput()
 	if err != nil {
 		HandleError(err, "cannot execute python : " + string(out), false)
@@ -72,7 +72,8 @@ func execute(pfile *globalUtils.PickFile) ([]byte, error){
 
 func setResult(pfile *globalUtils.PickFile, cmdRes []byte)[]byte {
 	resMap := make(map[string]int)
-	err := json.Unmarshal(cmdRes, &resMap)
+	stringed :=  strings.Trim(string(cmdRes), "\n")
+	err := json.Unmarshal([]byte(stringed), &resMap)
 	for k, v := range resMap {
 		pfile.Result[k] = v
 	}
