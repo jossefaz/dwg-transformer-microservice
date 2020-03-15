@@ -9,10 +9,13 @@ type channels struct {
 	Dal_Res string
 }
 
+type headers map[string]map[string]interface{}
+
 type constants struct {
 	CheckDWG string
 	From string
 	Channels channels
+	Headers headers
 }
 
 var Constant = constants{
@@ -26,4 +29,17 @@ var Constant = constants{
 		      "Dal_Req",
 		      "Dal_Res",
 	},
+	Headers: headers{
+		"ConvertDWG" : map[string]interface{}{
+			"From": "Controller",
+			"To":   "ConvertDWG",
+		},
+		"Dal_Req" : map[string]interface{}{
+			"From": "Controller",
+			"To":   "Dal_Req",
+		},
+	},
+
 }
+
+

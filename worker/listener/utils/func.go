@@ -29,11 +29,17 @@ func MessageReceiver(m amqp.Delivery, rmq *queue.Rabbitmq)  {
 		HandleError(json.Unmarshal(m.Body, pFIle), "Error decoding message in worker",false)
 		res, err1:= execute(pFIle)
 		if err1 != nil {
-			mess, err :=rmq.SendMessage([]byte(err1.Error()), config.LocalConfig.Queue.Rabbitmq.Result.Success, config.LocalConfig.Queue.Rabbitmq.Result.From)
+			mess, err :=rmq.SendMessage([]byte(err1.Error()), config.LocalConfig.Queue.Rabbitmq.Result.Success, map[string]interface{}{
+				"From" : config.LocalConfig.Queue.Rabbitmq.Result.From,
+				"To" : config.LocalConfig.Queue.Rabbitmq.Result.Success,
+			})
 			HandleError(err, "message sending error", false)
 			config.Logger.Log.Info(fmt.Sprintf(mess))
 		}
-		mess, err2 :=rmq.SendMessage(res, config.LocalConfig.Queue.Rabbitmq.Result.Success, config.LocalConfig.Queue.Rabbitmq.Result.From)
+		mess, err2 :=rmq.SendMessage(res, config.LocalConfig.Queue.Rabbitmq.Result.Success, map[string]interface{}{
+			"From" : config.LocalConfig.Queue.Rabbitmq.Result.From,
+			"To" : config.LocalConfig.Queue.Rabbitmq.Result.Success,
+		})
 		HandleError(err2, "message sending error", false)
 		config.Logger.Log.Info(fmt.Sprintf(mess))
 	}

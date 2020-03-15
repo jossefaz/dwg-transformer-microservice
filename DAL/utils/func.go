@@ -34,7 +34,11 @@ func MessageReceiver(m amqp.Delivery, rmq *queue.Rabbitmq)  {
 	if err != nil {
 		log.Logger.Log.Error(err)
 	} else {
-		rmq.SendMessage(res, "Dal_Res", "DAL")
+		rmq.SendMessage(res, "Dal_Res", map[string]interface{}{
+			"From" : "DAL",
+			"To" : "Dal_Res",
+			"Type" : dbQ.CrudT,
+		})
 	}
 	defer db.Close()
 }

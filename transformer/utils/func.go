@@ -37,7 +37,10 @@ func MessageReceiver(m amqp.Delivery, rmq *queue.Rabbitmq)  {
 			if err != nil {
 				config.Logger.Log.Error("cannot execute transformation on path :", pFIle.Path)
 			}
-			mess, err1 := rmq.SendMessage(res, resultConfig.Success, resultConfig.From)
+			mess, err1 := rmq.SendMessage(res, resultConfig.Success, map[string]interface{}{
+				"From" : "Transformer",
+				"To" : resultConfig.Success,
+			} )
 			HandleError(err1, "message sending error", false)
 			config.Logger.Log.Info(mess)
 
