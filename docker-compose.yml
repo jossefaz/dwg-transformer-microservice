@@ -47,6 +47,9 @@ services :
       - rabbitmq
     image: yossefazoulay/dwg-transformer
     restart: on-failure
+    environment:
+      - EXPORT_FORMAT: DXF
+      - DEV_PROD: prod
     volumes:
       - ./uploads:/app/shared
 
@@ -55,6 +58,8 @@ services :
       - rabbitmq
     image: yossefazoulay/dwg-worker
     restart: on-failure
+    environment:
+      - DEV_PROD: prod
     volumes:
       - ./uploads:/app/shared
 
