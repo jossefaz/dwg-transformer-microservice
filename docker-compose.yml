@@ -36,8 +36,12 @@ services :
       - rabbitmq
     image: yossefazoulay/dwg-controller
     restart: on-failure
+    environment:
+      - POOL_INTERVAL : 30
+      - DEV_PROD : prod
     volumes:
       - ./uploads:/app/shared
+
   transformer :
     depends_on :
       - rabbitmq
@@ -59,6 +63,8 @@ services :
       - rabbitmq
     image: yossefazoulay/dwg-dal
     restart: on-failure
+    environment:
+      - DEV_PROD: prod
     volumes:
         - ./uploads:/app/shared
 volumes:

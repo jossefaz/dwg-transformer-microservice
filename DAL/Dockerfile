@@ -24,4 +24,4 @@ COPY --from=builder /go/bin/main .
 COPY ./config/*.json ./config/
 # Run the hello binary.
 
-CMD ["./main", "prod"]
+CMD ["./main"]

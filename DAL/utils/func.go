@@ -26,7 +26,8 @@ func HandleError(err error, msg string, exit bool) {
 
 
 func MessageReceiver(m amqp.Delivery, rmq *queue.Rabbitmq)  {
-	dbQ := unpackMessage(m)
+	dbQ, err := unpackMessage(m)
+	HandleError(err, "cannot unpack message received in DAL to DB", err!=nil)
 	dbconf := config.GetDBConf(dbQ.DbType, dbQ.Schema)
 	db, err := model.ConnectToDb(dbconf.Dialect, dbconf.ConnString)
 	HandleError(err, "cannot connect to DB", err!=nil)
@@ -64,14 +65,15 @@ func dispatcher(db *model.CDb, dbQ *globalUtils.DbQuery ) ([]byte, error) {
 }
 
 
-func unpackMessage(m amqp.Delivery) *globalUtils.DbQuery {
+func unpackMessage(m amqp.Delivery) (*globalUtils.DbQuery, error) {
 	dbQ := &globalUtils.DbQuery{}
 	err := json.Unmarshal(m.Body, dbQ)
 	if err := m.Ack(false); err != nil {
 		log.Logger.Log.Error("Error acknowledging message : %s", err)
+		return &globalUtils.DbQuery{}, err
 	}
 	HandleError(err, "Error decoding DB message", false)
-	return dbQ
+	return dbQ, nil
 }
 
 

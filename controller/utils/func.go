@@ -62,6 +62,10 @@ func getMessageFromTransformer(m amqp.Delivery, rmq *queue.Rabbitmq) {
 	}
 }
 
+func checkResultsFromWorker(pFile *globalUtils.PickFile) bool {
+	return true
+}
+
 func getMessageFromWorker(m amqp.Delivery, rmq *queue.Rabbitmq) {
 	pFIle := unpackFileMessage(m)
 
@@ -95,7 +99,7 @@ func getMessageFromWorker(m amqp.Delivery, rmq *queue.Rabbitmq) {
 func PoolReceiver(m amqp.Delivery, rmq *queue.Rabbitmq) {
 	switch m.Headers["Type"] {
 	case "retrieve":
-		getRestrieveResponse(m, rmq)
+		getRetrieveResponse(m, rmq)
 	case "update":
 		getUpdateResponse(m)
 	}
@@ -105,7 +109,7 @@ func getUpdateResponse(m amqp.Delivery){
 	config.Logger.Log.Info(string(m.Body))
 }
 
-func getRestrieveResponse(m amqp.Delivery, rmq *queue.Rabbitmq){
+func getRetrieveResponse(m amqp.Delivery, rmq *queue.Rabbitmq){
 	type Timestamp time.Time
 	type Attachements struct {
 		Reference int
@@ -151,4 +155,20 @@ func Pooling(rmqConn *queue.Rabbitmq) {
 		},
 	})
 	rmqConn.SendMessage(mess, Constant.Channels.Dal_Req, Constant.Headers["Dal_Req"])
+}
+
+func Scheduler(tick *time.Ticker, done chan bool, rmqConn *queue.Rabbitmq) {
+	task(rmqConn, time.Now())
+	for {
+		select {
+		case t := <-tick.C:
+			task(rmqConn, t)
+		case <-done:
+			return
+		}
+	}
+}
+
+func task(rmqConn *queue.Rabbitmq, t time.Time) {
+	Pooling(rmqConn)
 }
