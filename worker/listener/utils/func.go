@@ -61,7 +61,7 @@ func convertMapKeysToString(customMap map[string]int) string {
 func execute(pfile *globalUtils.PickFile) ([]byte, error){
 	checks := convertMapKeysToString(pfile.Result)
 	config.Logger.Log.Debug("SEND CHECKS ", fmt.Sprintf(` "%s" `, checks) )
-	cmd := exec.Command("python", "../bootstrap.py", pfile.Path, checks)
+	cmd := exec.Command("python", "bootstrap.py", pfile.Path, checks)
 	out, err := cmd.CombinedOutput()
 	if err != nil {
 		HandleError(err, "cannot execute python : " + string(out), false)
