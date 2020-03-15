@@ -12,6 +12,8 @@ type Attachements struct {
 	Path string
 }
 
+
+
 func (Attachements) TableName() string {
 	return "Attachements"
 }
@@ -23,7 +25,7 @@ func Att_Retrieve(db *CDb, keyval map[string]interface{}) ([]byte, error){
 	if err != nil {
 		return nil, err
 	}
-	b, _ := json.Marshal(atts)
+	b, _ := json.Marshal(DBRes{modelRes:atts, ResType: "retrieve"})
 	return b, nil
 }
 
@@ -33,5 +35,9 @@ func Att_Update(db *CDb, where map[string]interface{}, update map[string]interfa
 	if err != nil {
 		return nil, err
 	}
-	return []byte(fmt.Sprintf(string(db.RowsAffected), " rows were updated")), nil
+	b, _ := json.Marshal(DBRes{
+		modelRes:fmt.Sprintf(string(db.RowsAffected), " rows were updated"),
+		ResType:"update",
+	})
+	return b, nil
 }

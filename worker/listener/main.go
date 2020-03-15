@@ -2,9 +2,9 @@ package main
 
 import (
 	"github.com/yossefazoulay/go_utils/queue"
+	"os"
 	"listener/config"
 	"listener/utils"
-	"os"
 )
 
 func main() {

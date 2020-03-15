@@ -21,6 +21,11 @@ type Schema struct {
 	Dialect string
 }
 
+type DBRes struct {
+	modelRes interface{}
+	ResType string
+}
+
 type Timestamp time.Time
 
 func HandleDBErrors(errs []error) error {

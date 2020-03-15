@@ -65,7 +65,7 @@ func getMessageFromTransformer(m amqp.Delivery, rmq *queue.Rabbitmq) {
 func getMessageFromWorker(m amqp.Delivery, rmq *queue.Rabbitmq) {
 	pFIle := unpackFileMessage(m)
 
-	mess, _ := json.Marshal(globalUtils.DbQuery{
+	mess, err := json.Marshal(globalUtils.DbQuery{
 		DbType: "mysql",
 		Schema:"dwg_transformer",
 		Table:  "Attachments",
@@ -77,16 +77,63 @@ func getMessageFromWorker(m amqp.Delivery, rmq *queue.Rabbitmq) {
 			"status" : 1,
 		},
 	})
+	if err != nil {
+		fmt.Println(err)
+		config.Logger.Log.Error(err)
+		HandleError(err, "cannot unmarshal json from worker", false)
+		config.Logger.Log.Error(string(m.Body))
+	}
 	message, err := rmq.SendMessage(mess, Constant.Channels.Dal_Req, Constant.From)
 	if err != nil {
 		config.Logger.Log.Error(err)
 	} else {
-		config.Logger.Log.Info(message)
+		config.Logger.Log.Info("SEND : " + message)
 	}
 
 }
 
 func PoolReceiver(m amqp.Delivery, rmq *queue.Rabbitmq) {
+	type DBRes struct {
+		modelRes interface{}
+		ResType string
+	}
+	if err := m.Ack(false); err != nil {
+		config.Logger.Log.Error("Error acknowledging message : %s", err)
+	}
+	var res DBRes
+	err := json.Unmarshal(m.Body, &res)
+	if err != nil {
+		fmt.Println(err)
+		config.Logger.Log.Error(err, string(m.Body))
+	}
+
+	switch res.ResType {
+	case "retrieve":
+		getRestrieveResponse(m, rmq)
+	case "update":
+		getUpdateResponse(m)
+	}
+
+
+
+}
+
+func getUpdateResponse(m amqp.Delivery){
+	type DBRes struct {
+		modelRes string
+		ResType string
+	}
+	var res DBRes
+	err := json.Unmarshal(m.Body, &res)
+	if err != nil {
+		fmt.Println(err)
+		config.Logger.Log.Error(err, string(m.Body))
+	}
+	config.Logger.Log.Info(res.modelRes)
+
+}
+
+func getRestrieveResponse(m amqp.Delivery, rmq *queue.Rabbitmq){
 	type Timestamp time.Time
 	type Attachements struct {
 		Reference int
@@ -94,17 +141,21 @@ func PoolReceiver(m amqp.Delivery, rmq *queue.Rabbitmq) {
 		StatusDate Timestamp
 		Path string
 	}
-	log := config.Logger.Log
-	if err := m.Ack(false); err != nil {
-		log.Error("Error acknowledging message : %s", err)
+	type DBResAtt struct {
+		modelRes []Attachements
+		ResType string
 	}
-	res := []Attachements{}
+
+	var res DBResAtt
 	err := json.Unmarshal(m.Body, &res)
 	if err != nil {
 		fmt.Println(err)
 		config.Logger.Log.Error(err)
+		HandleError(err, "MUST DISPATCH from POOL RECEIVER", false)
+		config.Logger.Log.Error(string(m.Body))
 	}
-	for _, file := range res {
+
+	for _, file := range res.modelRes {
 		message, err := json.Marshal(globalUtils.PickFile{
 			Id: file.Reference,
 			Path: file.Path,
@@ -118,6 +169,7 @@ func PoolReceiver(m amqp.Delivery, rmq *queue.Rabbitmq) {
 		HandleError(err1, "message sending error", false)
 		config.Logger.Log.Info(res)
 	}
+
 }
 
 func Pooling(rmqConn *queue.Rabbitmq) {

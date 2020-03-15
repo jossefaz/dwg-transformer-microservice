@@ -26,7 +26,7 @@ type Configuration struct {
 
 
 var configEnv = map[string]string{
-	"dev" : "./config/config.dev.json",
+	"dev" : "./listener/config/config.dev.json",
 	"prod" : "./config/config.prod.json",
 }
 
