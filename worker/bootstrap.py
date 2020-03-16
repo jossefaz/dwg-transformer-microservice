@@ -1,10 +1,7 @@
-import os
-
-from shapely.geometry import Point
 import sys
 import json
 
-from utils.io import oprint, eprint
+from utils.io import oprint
 from utils.path import file_exists
 from utils.file import json_from_file, dict_from_geojson, border_exists
 
@@ -34,7 +31,7 @@ def main():
             else :
                 raise RuntimeError("cannot convert geojson to dict (error in json loading) : {}".format(geojson))
             rm_file(geojson)
-            print(json.dumps(mainStore.store))
+            oprint(json.dumps(mainStore.store))
         else :
             raise FileNotFoundError("cannot convert file to geojson : {}".format(sys.argv[1]))
     else :
