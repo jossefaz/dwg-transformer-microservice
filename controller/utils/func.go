@@ -63,6 +63,7 @@ func getMessageFromTransformer(m amqp.Delivery, rmq *queue.Rabbitmq) {
 }
 
 func checkResultsFromWorker(pFile *globalUtils.PickFile) bool {
+	
 	return true
 }
 

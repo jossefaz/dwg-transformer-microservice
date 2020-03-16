@@ -37,8 +37,8 @@ services :
     image: yossefazoulay/dwg-controller
     restart: on-failure
     environment:
-      - POOL_INTERVAL : 30
-      - DEV_PROD : prod
+        POOL_INTERVAL : '30'
+        DEV_PROD : 'prod'
     volumes:
       - ./uploads:/app/shared
 
@@ -48,8 +48,8 @@ services :
     image: yossefazoulay/dwg-transformer
     restart: on-failure
     environment:
-      - EXPORT_FORMAT: DXF
-      - DEV_PROD: prod
+        EXPORT_FORMAT: 'DXF'
+        DEV_PROD: 'prod'
     volumes:
       - ./uploads:/app/shared
 
@@ -59,7 +59,7 @@ services :
     image: yossefazoulay/dwg-worker
     restart: on-failure
     environment:
-      - DEV_PROD: prod
+        DEV_PROD: 'prod'
     volumes:
       - ./uploads:/app/shared
 
@@ -69,7 +69,7 @@ services :
     image: yossefazoulay/dwg-dal
     restart: on-failure
     environment:
-      - DEV_PROD: prod
+        DEV_PROD: 'prod'
     volumes:
         - ./uploads:/app/shared
 volumes:

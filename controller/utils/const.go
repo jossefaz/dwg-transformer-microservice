@@ -7,6 +7,7 @@ type channels struct {
 	ConvertedDWG string
 	Dal_Req string
 	Dal_Res string
+
 }
 
 type headers map[string]map[string]interface{}
@@ -16,6 +17,7 @@ type constants struct {
 	From string
 	Channels channels
 	Headers headers
+
 }
 
 var Constant = constants{
