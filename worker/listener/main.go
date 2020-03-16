@@ -2,7 +2,6 @@ package main
 
 import (
 	"github.com/yossefazoulay/go_utils/queue"
-	"os"
 	"listener/config"
 	"listener/utils"
 	globalUtils "github.com/yossefazoulay/go_utils/utils"

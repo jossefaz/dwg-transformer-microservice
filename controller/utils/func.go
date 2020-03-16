@@ -62,38 +62,49 @@ func getMessageFromTransformer(m amqp.Delivery, rmq *queue.Rabbitmq) {
 	}
 }
 
-func checkResultsFromWorker(pFile *globalUtils.PickFile) bool {
-	
-	return true
+func checkResultsFromWorker(pFile *globalUtils.PickFile) int {
+	for _, val := range pFile.Result {
+		if ! globalUtils.Itob(val) {
+			return 0
+		}
+	}
+	return 1
 }
+
+
+
 
 func getMessageFromWorker(m amqp.Delivery, rmq *queue.Rabbitmq) {
 	pFIle := unpackFileMessage(m)
+	status := checkResultsFromWorker(pFIle)
+	if pFIle.Status != status {
+		mess, err := json.Marshal(globalUtils.DbQuery{
+			DbType: "mysql",
+			Schema:"dwg_transformer",
+			Table:  "Attachments",
+			CrudT:  "update",
+			Id: map[string]interface{}{
+				"reference" : pFIle.Id,
+			},
+			ORMKeyVal: map[string]interface{}{
+				"status" : status,
+			},
+		})
+		if err != nil {
+			fmt.Println(err)
+			config.Logger.Log.Error(err)
+			HandleError(err, "cannot unmarshal json from worker", false)
+			config.Logger.Log.Error(string(m.Body))
+		}
+		message, err := rmq.SendMessage(mess, Constant.Channels.Dal_Req, Constant.Headers["Dal_Req"])
+		if err != nil {
+			config.Logger.Log.Error(err)
+		} else {
+			config.Logger.Log.Info("SEND : " + message)
+		}
+	}
 
-	mess, err := json.Marshal(globalUtils.DbQuery{
-		DbType: "mysql",
-		Schema:"dwg_transformer",
-		Table:  "Attachments",
-		CrudT:  "update",
-		Id: map[string]interface{}{
-			"reference" : pFIle.Id,
-		},
-		ORMKeyVal: map[string]interface{}{
-			"status" : 1,
-		},
-	})
-	if err != nil {
-		fmt.Println(err)
-		config.Logger.Log.Error(err)
-		HandleError(err, "cannot unmarshal json from worker", false)
-		config.Logger.Log.Error(string(m.Body))
-	}
-	message, err := rmq.SendMessage(mess, Constant.Channels.Dal_Req, Constant.Headers["Dal_Req"])
-	if err != nil {
-		config.Logger.Log.Error(err)
-	} else {
-		config.Logger.Log.Info("SEND : " + message)
-	}
+
 
 }
 
@@ -131,6 +142,7 @@ func getRetrieveResponse(m amqp.Delivery, rmq *queue.Rabbitmq){
 		message, err := json.Marshal(globalUtils.PickFile{
 			Id: file.Reference,
 			Path: file.Path,
+			Status: file.Status,
 			Result : map[string]int{
 				"Transform" : 0,
 			},

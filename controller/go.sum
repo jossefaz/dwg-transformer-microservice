@@ -17,6 +17,8 @@ github.com/yossefazoulay/go_utils v0.0.0-20200315142153-f457cab42308 h1:fv+RRZVj
 github.com/yossefazoulay/go_utils v0.0.0-20200315142153-f457cab42308/go.mod h1:ucV4wyWrZXmLM1Y8J/xEjYE1Ho7kt+wYNwWEx4vL13E=
 github.com/yossefazoulay/go_utils v0.0.0-20200315142519-86b2c4b2899a h1:qe7Qxo/321L5frXZcendnZGazUpJTx0ERVgtdcNT2qc=
 github.com/yossefazoulay/go_utils v0.0.0-20200315142519-86b2c4b2899a/go.mod h1:ucV4wyWrZXmLM1Y8J/xEjYE1Ho7kt+wYNwWEx4vL13E=
+github.com/yossefazoulay/go_utils v0.0.0-20200316132019-9c5862f9c61e h1:mPuEv9EQMGMVLCy+LUa7ozUYpOSD74pZP9gYxXlOEBk=
+github.com/yossefazoulay/go_utils v0.0.0-20200316132019-9c5862f9c61e/go.mod h1:ucV4wyWrZXmLM1Y8J/xEjYE1Ho7kt+wYNwWEx4vL13E=
 golang.org/x/sys v0.0.0-20190422165155-953cdadca894 h1:Cz4ceDQGXuKRnVBDTS23GTn/pU5OE2C0WrNTOYK1Uuc=
 golang.org/x/sys v0.0.0-20190422165155-953cdadca894/go.mod h1:h1NjWce9XRLGQEsW7wpKNCjG9DtNlClVuFLEZdDNbEs=
 gopkg.in/check.v1 v0.0.0-20161208181325-20d25e280405/go.mod h1:Co6ibVJAznAaIkqp8huTwlJQCZ016jof/cbN4VW5Yz0=
