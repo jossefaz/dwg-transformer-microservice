@@ -39,6 +39,9 @@ services :
     environment:
         POOL_INTERVAL : '30'
         DEV_PROD : 'prod'
+        CAD_STATUS : 'CAD_check_status'
+        CAD_ERRORS : 'CAD_check_errors'
+
     volumes:
       - ./uploads:/app/shared
 

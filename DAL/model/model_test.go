@@ -9,14 +9,25 @@ import (
 var datbaseQuery  = globalUtils.DbQuery {
 	DbType: "mysql",
 	Id: map[string]interface{}{
-		"reference" : 5,
+		"Id" : 5,
 	},
-	Table :  "Attachments",
+	Table :  "CAD_check_status",
 	ORMKeyVal: map[string]interface{}{
-			"status" : 1,
+			"status_code" : 0,
 	},
 }
 
+var datbaseErrorQuery  = globalUtils.DbQuery {
+	DbType: "mysql",
+	Table :  "CAD_check_errors",
+	Id: map[string]interface{}{
+		"check_status_id"  : 5,
+	},
+	ORMKeyVal: map[string]interface{}{
+		"BorderExist" : 0,
+		"InsideJer" : 0,
+	},
+}
 
 
 func TestConnectToDb(t *testing.T) {
@@ -27,13 +38,20 @@ func TestConnectToDb(t *testing.T) {
 func TestCDb_Retrieve(t *testing.T) {
 	cdb, err:= ConnectToDb("mysql", "root:Dev123456!@(localhost)/dwg_transformer?charset=utf8&parseTime=True&loc=Local")
 	test.Ok(t, err)
-	_, err1 := cdb.Retrieve(&datbaseQuery)
+	_, err1 := cdb.RetrieveRow(&datbaseQuery)
+	test.Ok(t, err1)
+}
+
+func TestErrorsCreate(t *testing.T) {
+	cdb, err:= ConnectToDb("mysql", "root:Dev123456!@(localhost)/dwg_transformer?charset=utf8&parseTime=True&loc=Local")
+	test.Ok(t, err)
+	_, err1 := cdb.CreateRow(&datbaseErrorQuery)
 	test.Ok(t, err1)
 }
 
 func TestCDb_Update(t *testing.T) {
 	cdb, err:= ConnectToDb("mysql", "root:Dev123456!@(localhost)/dwg_transformer?charset=utf8&parseTime=True&loc=Local")
 	test.Ok(t, err)
-	_, err1 := cdb.Update(&datbaseQuery)
+	_, err1 := cdb.UpdateRow(&datbaseQuery)
 	test.Ok(t, err1)
 }

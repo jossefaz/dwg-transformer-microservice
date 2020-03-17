@@ -4,6 +4,7 @@ import (
 	"controller/config"
 	"encoding/json"
 	"fmt"
+	"github.com/mitchellh/mapstructure"
 	"github.com/streadway/amqp"
 	"github.com/yossefazoulay/go_utils/queue"
 	globalUtils "github.com/yossefazoulay/go_utils/utils"
@@ -24,7 +25,7 @@ func MessageReceiver(m amqp.Delivery, rmq *queue.Rabbitmq)  {
 	case "Transformer":
 		getMessageFromTransformer(m, rmq)
 	case "Worker" :
-		getMessageFromWorker(m, rmq)
+		GetMessageFromWorker(m, rmq)
 	case "DAL":
 		PoolReceiver(m, rmq)
 	default:
@@ -62,46 +63,69 @@ func getMessageFromTransformer(m amqp.Delivery, rmq *queue.Rabbitmq) {
 	}
 }
 
-func checkResultsFromWorker(pFile *globalUtils.PickFile) int {
+func CheckResultsFromWorker(pFile *globalUtils.PickFile) int {
 	for _, val := range pFile.Result {
-		if ! globalUtils.Itob(val) {
-			return 0
+		if globalUtils.Itob(val) {
+			return 20
 		}
 	}
-	return 1
+	return 10
+}
+
+func CreateErrorsInDB(pFile *globalUtils.PickFile) []byte {
+	errorsMap := map[string]interface{}{}
+	err := mapstructure.Decode(pFile.Result, &errorsMap)
+	HandleError(err, "cannot decode error object to ORMKeyval", false)
+	mess, err1 := json.Marshal(globalUtils.DbQuery{
+		DbType: Constant.DBType,
+		Schema:Constant.Schema,
+		Table:  Constant.Cad_errors_table,
+		CrudT:  Constant.CRUD.CREATE,
+		Id: map[string]interface{}{
+			"check_status_id" : pFile.Id,
+		},
+		ORMKeyVal: errorsMap,
+	})
+	if err1 != nil {
+		HandleError(err1, "cannot create an update error object from worker message", false)
+	}
+	return mess
+}
+
+func sendMessageToQueue(body []byte, queueName string, headers map[string]interface{}, rmq *queue.Rabbitmq) {
+	message, err := rmq.SendMessage(body,queueName , headers)
+	if err != nil {
+		config.Logger.Log.Error(err)
+	} else {
+		config.Logger.Log.Info("SEND : " + message)
+	}
 }
 
 
-
-
-func getMessageFromWorker(m amqp.Delivery, rmq *queue.Rabbitmq) {
+func GetMessageFromWorker(m amqp.Delivery, rmq *queue.Rabbitmq) {
 	pFIle := unpackFileMessage(m)
-	status := checkResultsFromWorker(pFIle)
-	if pFIle.Status != status {
+	status := CheckResultsFromWorker(pFIle)
+	if pFIle.Status != status || status == 20 {
+		if status == 20 {
+			mess := CreateErrorsInDB(pFIle)
+			sendMessageToQueue(mess, Constant.Channels.Dal_Req, Constant.Headers["Dal_Req"], rmq)
+		}
 		mess, err := json.Marshal(globalUtils.DbQuery{
-			DbType: "mysql",
-			Schema:"dwg_transformer",
-			Table:  "Attachments",
-			CrudT:  "update",
+			DbType: Constant.DBType,
+			Schema: Constant.Schema,
+			Table:  Constant.Cad_check_table,
+			CrudT:  Constant.CRUD.UPDATE,
 			Id: map[string]interface{}{
-				"reference" : pFIle.Id,
+				"Id" : pFIle.Id,
 			},
 			ORMKeyVal: map[string]interface{}{
-				"status" : status,
+				"status_code" : status,
 			},
 		})
 		if err != nil {
-			fmt.Println(err)
-			config.Logger.Log.Error(err)
-			HandleError(err, "cannot unmarshal json from worker", false)
-			config.Logger.Log.Error(string(m.Body))
+			HandleError(err, "cannot create an update object from worker message", false)
 		}
-		message, err := rmq.SendMessage(mess, Constant.Channels.Dal_Req, Constant.Headers["Dal_Req"])
-		if err != nil {
-			config.Logger.Log.Error(err)
-		} else {
-			config.Logger.Log.Info("SEND : " + message)
-		}
+		sendMessageToQueue(mess, Constant.Channels.Dal_Req, Constant.Headers["Dal_Req"], rmq)
 	}
 
 
@@ -158,10 +182,10 @@ func getRetrieveResponse(m amqp.Delivery, rmq *queue.Rabbitmq){
 
 func Pooling(rmqConn *queue.Rabbitmq) {
 	mess, _ := json.Marshal(globalUtils.DbQuery{
-		DbType: "mysql",
-		Schema:"dwg_transformer",
-		Table:  "Attachments",
-		CrudT:  "retrieve",
+		DbType: Constant.DBType,
+		Schema:Constant.Schema,
+		Table:  Constant.Cad_check_table,
+		CrudT:  Constant.CRUD.RETRIEVE,
 		Id: map[string]interface{}{},
 		ORMKeyVal: map[string]interface{}{
 			"status" : 0,

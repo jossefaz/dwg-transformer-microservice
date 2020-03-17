@@ -3,12 +3,11 @@ package model
 import (
 	"errors"
 	"fmt"
+	_ "github.com/go-sql-driver/mysql"
 	"github.com/jinzhu/gorm"
 	globalUtils "github.com/yossefazoulay/go_utils/utils"
 	"strings"
 	"time"
-	_ "github.com/go-sql-driver/mysql"
-
 )
 
 type CDb struct {
@@ -45,10 +44,18 @@ func ConnectToDb(dialect string, connString string) (*CDb, error){
 	return &dup, nil
 }
 
-func (db *CDb) Retrieve( dbQ *globalUtils.DbQuery ) ([]byte, error){
+func (db *CDb) RetrieveRow( dbQ *globalUtils.DbQuery ) ([]byte, error){
 	switch dbQ.Table {
-	case "Attachments":
-		res, err := Att_Retrieve(db, dbQ.ORMKeyVal)
+	case "CAD_check_status":
+		status :=  []Cad_check_status{}
+		res, err := Retrieve(&status,db, dbQ.ORMKeyVal)
+		if err != nil {
+			return nil, err
+		}
+		return res, nil
+	case "CAD_check_errors":
+		errors :=  []Cad_check_errors{}
+		res, err := Retrieve(&errors,db, dbQ.ORMKeyVal)
 		if err != nil {
 			return nil, err
 		}
@@ -56,10 +63,11 @@ func (db *CDb) Retrieve( dbQ *globalUtils.DbQuery ) ([]byte, error){
 	}
 	return []byte{}, errors.New("any tables allowed correspond to the requested table name")
 }
-func (db *CDb) Update( dbQ *globalUtils.DbQuery ) ([]byte, error) {
+
+func (db *CDb) UpdateRow( dbQ *globalUtils.DbQuery ) ([]byte, error) {
 	switch dbQ.Table {
-	case "Attachments":
-		res, err := Att_Update(db, dbQ.Id, dbQ.ORMKeyVal)
+	case "CAD_check_status":
+		res, err := StatusUpdate(db, dbQ.Id, dbQ.ORMKeyVal)
 		if err != nil {
 			return nil, err
 		}
@@ -67,3 +75,17 @@ func (db *CDb) Update( dbQ *globalUtils.DbQuery ) ([]byte, error) {
 	}
 	return []byte{}, errors.New("any tables allowed correspond to the requested table name")
 }
+
+func (db *CDb) CreateRow( dbQ *globalUtils.DbQuery ) ([]byte, error) {
+	switch dbQ.Table {
+	case "CAD_check_errors":
+		res, err := ErrorsCreate(db, dbQ.Id, dbQ.ORMKeyVal)
+		if err != nil {
+			return nil, err
+		}
+		return res, nil
+	}
+	return []byte{}, errors.New("any tables allowed correspond to the requested table name")
+}
+
+

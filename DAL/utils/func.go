@@ -47,13 +47,13 @@ func MessageReceiver(m amqp.Delivery, rmq *queue.Rabbitmq)  {
 func dispatcher(db *model.CDb, dbQ *globalUtils.DbQuery ) ([]byte, error) {
 	switch dbQ.CrudT {
 	case "retrieve":
-		res, err := db.Retrieve(dbQ)
+		res, err := db.RetrieveRow(dbQ)
 		if err != nil {
 			return nil, err
 		}
 		return res, nil
 	case "update":
-		res, err := db.Update(dbQ)
+		res, err := db.UpdateRow(dbQ)
 		if err != nil {
 			return nil, err
 		}
