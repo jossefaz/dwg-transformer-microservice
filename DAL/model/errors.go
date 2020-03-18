@@ -2,7 +2,6 @@ package model
 
 import (
 	"encoding/json"
-	"fmt"
 	"reflect"
 )
 
@@ -63,16 +62,27 @@ func parsInt(val interface{}) int {
 	return testval
 }
 
+func checkIfExist(db *CDb, id int, errorCode int) bool {
+	atts :=  CAD_check_errors{}
+	if db.Where(&CAD_check_errors{Check_status_id: id, Error_code: errorCode}).First(&atts).RecordNotFound() {
+		return false
+	}
+	return true
+}
+
 func ErrorsCreate(db *CDb, FkId map[string]interface{}, keyval map[string]interface{}) ([]byte, error){
 	keyval = Lut_Error_Retrieve(db, keyval)
 	for _, errorCode := range keyval {
-		atts :=  CAD_check_errors{}
 		checkId := parsInt(FkId["check_status_id"])
-		atts.Check_status_id = checkId
-		testval := parsInt(errorCode)
-		atts.Error_code = testval
-		rows, _ := Create(atts, db)
-		fmt.Println(rows)
+		errVal := parsInt(errorCode)
+		if !checkIfExist(db, checkId, errVal) {
+			atts :=  CAD_check_errors{}
+			atts.Check_status_id = checkId
+			atts.Error_code = errVal
+			_, err := Create(atts, db)
+			HandleDBErrors([]error{err})
+		}
+
 	}
 	return []byte{}, nil
 }
