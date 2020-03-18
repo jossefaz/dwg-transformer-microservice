@@ -60,22 +60,8 @@ func getMessageFromTransformer(m amqp.Delivery, rmq *queue.Rabbitmq) {
 		config.Logger.Log.Info(res)
 	} else if pFIle.Result["Transform"] == 0 {
 		pFIle.Result["Transform"] = 1 // make the transform as error for create error
-		createErrors := CreateErrorsInDB(pFIle)
-		mess, err := json.Marshal(globalUtils.DbQuery{
-			DbType: Constant.DBType,
-			Schema: Constant.Schema,
-			Table:  Constant.Cad_check_table,
-			CrudT:  Constant.CRUD.UPDATE,
-			Id: map[string]interface{}{
-				"Id" : pFIle.Id,
-			},
-			ORMKeyVal: map[string]interface{}{
-				"status_code" : 20,
-			},
-		})
-		if err != nil {
-			HandleError(err, "cannot create an update object from worker message", false)
-		}
+		createErrors := CreateDBMessage(map[string]interface{}{"check_status_id" : pFIle.Id}, Constant.CRUD.CREATE, Constant.Cad_errors_table, fillStructFromResult(pFIle))
+		mess := CreateDBMessage(map[string]interface{}{"Id" : pFIle.Id}, Constant.CRUD.UPDATE, Constant.Cad_check_table, map[string]interface{}{"status_code" : 20})
 		sendMessageToQueue(createErrors, Constant.Channels.Dal_Req, Constant.Headers["Dal_Req"], rmq)
 		sendMessageToQueue(mess, Constant.Channels.Dal_Req, Constant.Headers["Dal_Req"], rmq)
 		log.Error("The transformer did not sucess to transform this file : " , pFIle.Path)
@@ -93,22 +79,24 @@ func CheckResultsFromWorker(pFile *globalUtils.PickFile) int {
 	return 10
 }
 
-func CreateErrorsInDB(pFile *globalUtils.PickFile) []byte {
-	errorsMap := map[string]interface{}{}
-	err := mapstructure.Decode(pFile.Result, &errorsMap)
-	HandleError(err, "cannot decode error object to ORMKeyval", false)
+func fillStructFromResult (pFile *globalUtils.PickFile) map[string]interface{} {
+	resultMap := map[string]interface{}{}
+	err := mapstructure.Decode(pFile.Result, &resultMap)
+	HandleError(err, "cannot decode object to ORMKeyval", false)
+	return resultMap
+}
+
+func CreateDBMessage(ids map[string]interface{},  crud string, table string, keyval map[string]interface{}) []byte {
 	mess, err1 := json.Marshal(globalUtils.DbQuery{
 		DbType: Constant.DBType,
 		Schema:Constant.Schema,
-		Table:  Constant.Cad_errors_table,
-		CrudT:  Constant.CRUD.CREATE,
-		Id: map[string]interface{}{
-			"check_status_id" : pFile.Id,
-		},
-		ORMKeyVal: errorsMap,
+		Table:  table,
+		CrudT:  crud,
+		Id: ids,
+		ORMKeyVal: keyval,
 	})
 	if err1 != nil {
-		HandleError(err1, "cannot create an update error object from worker message", false)
+		HandleError(err1, "cannot create a DB object from worker message", false)
 	}
 	return mess
 }
@@ -127,28 +115,11 @@ func GetMessageFromWorker(m amqp.Delivery, rmq *queue.Rabbitmq) {
 	pFIle := unpackFileMessage(m)
 	status := CheckResultsFromWorker(pFIle)
 	if pFIle.Status != status || status == 20 {
-		createErrors := CreateErrorsInDB(pFIle)
-		mess, err := json.Marshal(globalUtils.DbQuery{
-			DbType: Constant.DBType,
-			Schema: Constant.Schema,
-			Table:  Constant.Cad_check_table,
-			CrudT:  Constant.CRUD.UPDATE,
-			Id: map[string]interface{}{
-				"Id" : pFIle.Id,
-			},
-			ORMKeyVal: map[string]interface{}{
-				"status_code" : status,
-			},
-		})
-		if err != nil {
-			HandleError(err, "cannot create an update object from worker message", false)
-		}
+		createErrors := CreateDBMessage(map[string]interface{}{"check_status_id" : pFIle.Id}, Constant.CRUD.CREATE, Constant.Cad_errors_table, fillStructFromResult(pFIle))
+		mess := CreateDBMessage(map[string]interface{}{"Id" : pFIle.Id}, Constant.CRUD.UPDATE, Constant.Cad_check_table, map[string]interface{}{"status_code" : status})
 		sendMessageToQueue(createErrors, Constant.Channels.Dal_Req, Constant.Headers["Dal_Req"], rmq)
 		sendMessageToQueue(mess, Constant.Channels.Dal_Req, Constant.Headers["Dal_Req"], rmq)
 	}
-
-
-
 }
 
 func PoolReceiver(m amqp.Delivery, rmq *queue.Rabbitmq) {
@@ -202,17 +173,8 @@ func getRetrieveResponse(m amqp.Delivery, rmq *queue.Rabbitmq){
 }
 
 func Pooling(rmqConn *queue.Rabbitmq) {
-	mess, _ := json.Marshal(globalUtils.DbQuery{
-		DbType: Constant.DBType,
-		Schema:Constant.Schema,
-		Table:  Constant.Cad_check_table,
-		CrudT:  Constant.CRUD.RETRIEVE,
-		Id: map[string]interface{}{},
-		ORMKeyVal: map[string]interface{}{
-			"status_code" : 0,
-		},
-	})
-	rmqConn.SendMessage(mess, Constant.Channels.Dal_Req, Constant.Headers["Dal_Req"])
+	mess := CreateDBMessage(map[string]interface{}{}, Constant.CRUD.RETRIEVE, Constant.Cad_check_table, map[string]interface{}{"status_code" : 0})
+	sendMessageToQueue(mess, Constant.Channels.Dal_Req, Constant.Headers["Dal_Req"], rmqConn)
 }
 
 func Scheduler(tick *time.Ticker, done chan bool, rmqConn *queue.Rabbitmq) {
