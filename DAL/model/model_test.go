@@ -17,14 +17,17 @@ var datbaseQuery  = globalUtils.DbQuery {
 	},
 }
 
+
 var datbaseErrorQuery  = globalUtils.DbQuery {
 	DbType: "mysql",
+	Schema : "dwg_transformer",
+	CrudT: "create",
 	Table :  "CAD_check_errors",
 	Id: map[string]interface{}{
-		"check_status_id"  : 5,
+		"check_status_id"  : 6,
 	},
 	ORMKeyVal: map[string]interface{}{
-		"BorderExist" : 0,
+		"BorderExist" : 1,
 		"InsideJer" : 0,
 	},
 }

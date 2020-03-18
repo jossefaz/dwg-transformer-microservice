@@ -58,6 +58,13 @@ func dispatcher(db *model.CDb, dbQ *globalUtils.DbQuery ) ([]byte, error) {
 			return nil, err
 		}
 		return res, nil
+	case "create":
+		res, err := db.CreateRow(dbQ)
+		if err != nil {
+			return nil, err
+		}
+		return res, nil
+
 	default:
 		return nil, errors.New("CRUD operation must be one of the following : retrieve, update | delete and create not supported yet")
 	}

@@ -106,10 +106,7 @@ func GetMessageFromWorker(m amqp.Delivery, rmq *queue.Rabbitmq) {
 	pFIle := unpackFileMessage(m)
 	status := CheckResultsFromWorker(pFIle)
 	if pFIle.Status != status || status == 20 {
-		if status == 20 {
-			mess := CreateErrorsInDB(pFIle)
-			sendMessageToQueue(mess, Constant.Channels.Dal_Req, Constant.Headers["Dal_Req"], rmq)
-		}
+		createErrors := CreateErrorsInDB(pFIle)
 		mess, err := json.Marshal(globalUtils.DbQuery{
 			DbType: Constant.DBType,
 			Schema: Constant.Schema,
@@ -125,6 +122,7 @@ func GetMessageFromWorker(m amqp.Delivery, rmq *queue.Rabbitmq) {
 		if err != nil {
 			HandleError(err, "cannot create an update object from worker message", false)
 		}
+		sendMessageToQueue(createErrors, Constant.Channels.Dal_Req, Constant.Headers["Dal_Req"], rmq)
 		sendMessageToQueue(mess, Constant.Channels.Dal_Req, Constant.Headers["Dal_Req"], rmq)
 	}
 
@@ -147,14 +145,16 @@ func getUpdateResponse(m amqp.Delivery){
 
 func getRetrieveResponse(m amqp.Delivery, rmq *queue.Rabbitmq){
 	type Timestamp time.Time
-	type Attachements struct {
-		Reference int
-		Status int
-		StatusDate Timestamp
+	type Cad_check_status struct {
+		Id int
+		Status_code int
+		Last_update Timestamp
 		Path string
+		Ref_num int
+		System_code int
 	}
 
-	var res []Attachements
+	var res []Cad_check_status
 	err := json.Unmarshal(m.Body, &res)
 	if err != nil {
 		fmt.Println(err)
@@ -164,9 +164,9 @@ func getRetrieveResponse(m amqp.Delivery, rmq *queue.Rabbitmq){
 	}
 	for _, file := range res {
 		message, err := json.Marshal(globalUtils.PickFile{
-			Id: file.Reference,
+			Id: file.Id,
 			Path: file.Path,
-			Status: file.Status,
+			Status: file.Status_code,
 			Result : map[string]int{
 				"Transform" : 0,
 			},
@@ -188,7 +188,7 @@ func Pooling(rmqConn *queue.Rabbitmq) {
 		CrudT:  Constant.CRUD.RETRIEVE,
 		Id: map[string]interface{}{},
 		ORMKeyVal: map[string]interface{}{
-			"status" : 0,
+			"status_code" : 0,
 		},
 	})
 	rmqConn.SendMessage(mess, Constant.Channels.Dal_Req, Constant.Headers["Dal_Req"])

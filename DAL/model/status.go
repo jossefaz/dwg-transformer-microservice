@@ -5,8 +5,8 @@ import (
 )
 
 type Cad_check_status struct {
-	Id int
-	Status_code int
+	ID int
+	Status_code *int
 	Last_update Timestamp
 	Path string
 	Ref_num int

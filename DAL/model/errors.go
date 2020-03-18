@@ -3,6 +3,7 @@ package model
 import (
 	"encoding/json"
 	"fmt"
+	"reflect"
 )
 
 type CAD_check_errors struct {
@@ -41,20 +42,35 @@ func ErrorsRetrieve(db *CDb, keyval map[string]interface{}) ([]byte, error){
 func Lut_Error_Retrieve(db *CDb, keyval map[string]interface{}) (map[string]interface{}){
 	atts :=  LUT_cad_errors{}
 	copyKeyval := make(map[string]interface{})
-	for errorName, _ := range keyval {
-		db.Where("func_name = ?", errorName).Find(&atts).GetErrors()
-		copyKeyval[errorName] = atts.Id
+	for errorName, errorval := range keyval {
+		testval := parsInt(errorval)
+		if testval == 1 {
+			db.Where("func_name = ?", errorName).Find(&atts).GetErrors()
+			copyKeyval[errorName] = atts.Id
+		}
 	}
-
 	return copyKeyval
+}
+
+func parsInt(val interface{}) int {
+	var testval int
+	if reflect.TypeOf(val).Kind() == reflect.Float64 {
+		testval =  int(val.(float64))
+	}
+	if reflect.TypeOf(val).Kind() == reflect.Int {
+		testval =  val.(int)
+	}
+	return testval
 }
 
 func ErrorsCreate(db *CDb, FkId map[string]interface{}, keyval map[string]interface{}) ([]byte, error){
 	keyval = Lut_Error_Retrieve(db, keyval)
 	for _, errorCode := range keyval {
 		atts :=  CAD_check_errors{}
-		atts.Check_status_id = FkId["check_status_id"].(int)
-		atts.Error_code = errorCode.(int)
+		checkId := parsInt(FkId["check_status_id"])
+		atts.Check_status_id = checkId
+		testval := parsInt(errorCode)
+		atts.Error_code = testval
 		rows, _ := Create(atts, db)
 		fmt.Println(rows)
 	}

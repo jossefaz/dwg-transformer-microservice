@@ -32,6 +32,7 @@ var configEnv = map[string]string{
 var LocalConfig Configuration
 var Logger utils.Logger
 
+
 func GetConfig(env string) {
 	configuration := Configuration{}
 	err := gonfig.GetConf(configEnv[env], &configuration)
