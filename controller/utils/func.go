@@ -59,9 +59,30 @@ func getMessageFromTransformer(m amqp.Delivery, rmq *queue.Rabbitmq) {
 		HandleError(err1, "message sending error", false)
 		config.Logger.Log.Info(res)
 	} else if pFIle.Result["Transform"] == 0 {
+		pFIle.Result["Transform"] = 1 // make the transform as error for create error
+		createErrors := CreateErrorsInDB(pFIle)
+		mess, err := json.Marshal(globalUtils.DbQuery{
+			DbType: Constant.DBType,
+			Schema: Constant.Schema,
+			Table:  Constant.Cad_check_table,
+			CrudT:  Constant.CRUD.UPDATE,
+			Id: map[string]interface{}{
+				"Id" : pFIle.Id,
+			},
+			ORMKeyVal: map[string]interface{}{
+				"status_code" : 20,
+			},
+		})
+		if err != nil {
+			HandleError(err, "cannot create an update object from worker message", false)
+		}
+		sendMessageToQueue(createErrors, Constant.Channels.Dal_Req, Constant.Headers["Dal_Req"], rmq)
+		sendMessageToQueue(mess, Constant.Channels.Dal_Req, Constant.Headers["Dal_Req"], rmq)
 		log.Error("The transformer did not sucess to transform this file : " , pFIle.Path)
 	}
 }
+
+
 
 func CheckResultsFromWorker(pFile *globalUtils.PickFile) int {
 	for _, val := range pFile.Result {
