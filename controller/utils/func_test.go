@@ -64,8 +64,8 @@ func TestGetMessageFromWorker(t *testing.T) {
 
 }
 
-//func TestUpdateErrorsCode(t *testing.T) {
-//	UpdateErrorsCode(&pFile)
-//}
+func TestCreateErrorsInDB(t *testing.T) {
+	CreateErrorsInDB(&pFile)
+}
 
 

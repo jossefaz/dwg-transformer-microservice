@@ -54,7 +54,7 @@ func (db *CDb) RetrieveRow( dbQ *globalUtils.DbQuery ) ([]byte, error){
 		}
 		return res, nil
 	case "CAD_check_errors":
-		errors :=  []Cad_check_errors{}
+		errors :=  []CAD_check_errors{}
 		res, err := Retrieve(&errors,db, dbQ.ORMKeyVal)
 		if err != nil {
 			return nil, err

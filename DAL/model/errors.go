@@ -2,12 +2,12 @@ package model
 
 import (
 	"encoding/json"
+	"fmt"
 )
 
-type Cad_check_errors struct {
-	Id int
-	check_status int
-	error_code Timestamp
+type CAD_check_errors struct {
+	Check_status_id int
+	Error_code int
 }
 
 type LUT_cad_errors struct {
@@ -15,7 +15,7 @@ type LUT_cad_errors struct {
 	Func_name string
 }
 
-func (Cad_check_errors) TableName() string {
+func (CAD_check_errors) TableName() string {
 	return "CAD_check_errors"
 }
 
@@ -26,7 +26,7 @@ func (LUT_cad_errors) TableName() string {
 
 
 func ErrorsRetrieve(db *CDb, keyval map[string]interface{}) ([]byte, error){
-	atts :=  []Cad_check_errors{}
+	atts :=  []CAD_check_errors{}
 	errors := db.Where(keyval).Find(&atts).GetErrors()
 	err := HandleDBErrors(errors)
 	if err != nil {
@@ -50,24 +50,14 @@ func Lut_Error_Retrieve(db *CDb, keyval map[string]interface{}) (map[string]inte
 }
 
 func ErrorsCreate(db *CDb, FkId map[string]interface{}, keyval map[string]interface{}) ([]byte, error){
-
-
-	//keyval = Lut_Error_Retrieve(db, keyval)
-	//for _, errorCode := range keyval {
-	//	atts :=  Cad_check_errors{}
-	//
-	//	atts.Id = FkId["check_status_id"]
-	//
-	//	errors := db.Create(&atts).GetErrors()
-	//
-	//}
-	//
-	//
-	//err := HandleDBErrors(errors)
-	//if err != nil {
-	//	return nil, err
-	//}
-	//b, _ := json.Marshal(atts)
+	keyval = Lut_Error_Retrieve(db, keyval)
+	for _, errorCode := range keyval {
+		atts :=  CAD_check_errors{}
+		atts.Check_status_id = FkId["check_status_id"].(int)
+		atts.Error_code = errorCode.(int)
+		rows, _ := Create(atts, db)
+		fmt.Println(rows)
+	}
 	return []byte{}, nil
 }
 
