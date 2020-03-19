@@ -35,10 +35,27 @@ spec :
             containers :
                 - name : dwg-controller
                   image : yossefazoulay/dwg-controller
-            volumes :
-                - name : dwg-persistent-storage
-                  persistentVolumeClaim :
-                    claimName : dwg-pvc
+                  env :
+                    - name: POOL_INTERVAL
+                      value: "30"
+                    - name: DEV_PROD
+                      value: "prod"
+                    - name: CAD_STATUS
+                      value: "CAD_check_status"
+                    - name: CAD_ERRORS
+                      value: "CAD_check_errors"
+                    - name : DB
+                      value : "mysql"
+                    - name : SCHEMA
+                      value: "dwg_transformer"
+                  volumeMounts:
+                    - name: dwg-persistent-storage
+                      mountPath: /app/shared
+            volumes:
+              - name: dwg-persistent-storage
+                persistentVolumeClaim:
+                  claimName: dwg-pvc
+
 ---
 apiVersion : apps/v1
 kind : Deployment
@@ -57,19 +74,30 @@ spec :
             containers :
                 - name : dwg-transformer
                   image : yossefazoulay/dwg-transformer
+                  env :
+                    - name: DEV_PROD
+                      value: "prod"
+                    - name: EXPORT_FORMAT
+                      value: "DXF"
+                  volumeMounts:
+                    - name: dwg-persistent-storage
+                      mountPath: /app/shared
             volumes :
                 - name : dwg-persistent-storage
                   persistentVolumeClaim :
                     claimName : dwg-pvc
 ---
-apiVersion: v1
-kind: Deplpoyment
+apiVersion: apps/v1
+kind: Deployment
 metadata:
   labels:
-    app: dwg-queue-controller
-  name: rabbitmq-controller
+    app: dwg-queue
+  name: rabbitmq
 spec:
   replicas: 1
+  selector:
+    matchLabels:
+      app: dwg-queue
   template:
     metadata:
       labels:
@@ -98,9 +126,43 @@ spec :
       containers :
         - name : dwg-worker
           image : yossefazoulay/dwg-worker
+          env:
+            - name: DEV_PROD
+              value: "prod"
+          volumeMounts:
+            - name: dwg-persistent-storage
+              mountPath: /app/shared
       volumes :
         - name : dwg-persistent-storage
           persistentVolumeClaim :
             claimName : dwg-pvc
+---
+apiVersion : apps/v1
+kind : Deployment
+metadata :
+  name : dwg-dal
+spec :
+  selector :
+    matchLabels :
+      app : dwg-dal
+  replicas : 1
+  template :
+    metadata :
+      labels :
+        app : dwg-dal
+    spec :
+      containers :
+        - name : dwg-dal
+          image : yossefazoulay/dwg-dal
+          env:
+            - name: DEV_PROD
+              value: "prod"
+          volumeMounts:
+            - name: dwg-persistent-storage
+              mountPath: /app/shared
+      volumes:
+        - name: dwg-persistent-storage
+          persistentVolumeClaim:
+            claimName: dwg-pvc
 ---
     

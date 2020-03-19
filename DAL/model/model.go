@@ -6,6 +6,7 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/jinzhu/gorm"
 	globalUtils "github.com/yossefazoulay/go_utils/utils"
+	tables "github.com/yossefaz/go_struct"
 	"strings"
 	"time"
 )
@@ -47,14 +48,14 @@ func ConnectToDb(dialect string, connString string) (*CDb, error){
 func (db *CDb) RetrieveRow( dbQ *globalUtils.DbQuery ) ([]byte, error){
 	switch dbQ.Table {
 	case "CAD_check_status":
-		status :=  []Cad_check_status{}
+		status :=  []tables.Cad_check_status{}
 		res, err := Retrieve(&status,db, dbQ.ORMKeyVal)
 		if err != nil {
 			return nil, err
 		}
 		return res, nil
 	case "CAD_check_errors":
-		errors :=  []CAD_check_errors{}
+		errors :=  []tables.CAD_check_errors{}
 		res, err := Retrieve(&errors,db, dbQ.ORMKeyVal)
 		if err != nil {
 			return nil, err

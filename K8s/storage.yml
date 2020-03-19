@@ -16,7 +16,7 @@ spec :
 apiVersion : v1
 kind : PersistentVolume
 metadata :
-    name : local-storage
+    name : storage-local-dwg
 spec : 
     storageClassName : dwg-storage
     capacity :
@@ -24,5 +24,5 @@ spec :
     accessModes :
         - ReadWriteOnce
     hostPath :
-        path : "/mnt/dwg-transformer/"
+        path : "/hosthome/yossefaz/Documents/ness/dwg_transformer/uploads"
         type : DirectoryOrCreate
