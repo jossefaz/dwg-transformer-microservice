@@ -3,30 +3,11 @@ package model
 import (
 	"encoding/json"
 	"reflect"
+	tables "github.com/yossefaz/go_struct"
 )
 
-type CAD_check_errors struct {
-	Check_status_id int
-	Error_code int
-}
-
-type LUT_cad_errors struct {
-	Id int
-	Func_name string
-}
-
-func (CAD_check_errors) TableName() string {
-	return "CAD_check_errors"
-}
-
-func (LUT_cad_errors) TableName() string {
-	return "LUT_cad_errors"
-}
-
-
-
 func ErrorsRetrieve(db *CDb, keyval map[string]interface{}) ([]byte, error){
-	atts :=  []CAD_check_errors{}
+	atts :=  []tables.CAD_check_errors{}
 	errors := db.Where(keyval).Find(&atts).GetErrors()
 	err := HandleDBErrors(errors)
 	if err != nil {
@@ -36,10 +17,8 @@ func ErrorsRetrieve(db *CDb, keyval map[string]interface{}) ([]byte, error){
 	return b, nil
 }
 
-
-
 func Lut_Error_Retrieve(db *CDb, keyval map[string]interface{}) (map[string]interface{}){
-	atts :=  LUT_cad_errors{}
+	atts :=  tables.LUT_cad_errors{}
 	copyKeyval := make(map[string]interface{})
 	for errorName, errorval := range keyval {
 		testval := parsInt(errorval)
@@ -63,8 +42,8 @@ func parsInt(val interface{}) int {
 }
 
 func checkIfExist(db *CDb, id int, errorCode int) bool {
-	atts :=  CAD_check_errors{}
-	if db.Where(&CAD_check_errors{Check_status_id: id, Error_code: errorCode}).First(&atts).RecordNotFound() {
+	atts :=  tables.CAD_check_errors{}
+	if db.Where(&tables.CAD_check_errors{Check_status_id: id, Error_code: errorCode}).First(&atts).RecordNotFound() {
 		return false
 	}
 	return true
@@ -76,13 +55,12 @@ func ErrorsCreate(db *CDb, FkId map[string]interface{}, keyval map[string]interf
 		checkId := parsInt(FkId["check_status_id"])
 		errVal := parsInt(errorCode)
 		if !checkIfExist(db, checkId, errVal) {
-			atts :=  CAD_check_errors{}
+			atts :=  tables.CAD_check_errors{}
 			atts.Check_status_id = checkId
 			atts.Error_code = errVal
 			_, err := Create(atts, db)
 			HandleDBErrors([]error{err})
 		}
-
 	}
 	return []byte{}, nil
 }

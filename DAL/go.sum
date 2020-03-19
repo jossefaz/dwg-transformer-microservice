@@ -40,6 +40,8 @@ github.com/stretchr/testify v1.2.2 h1:bSDNvY7ZPG5RlJ8otE/7V6gMiyenm9RtJ7IUVIAoJ1
 github.com/stretchr/testify v1.2.2/go.mod h1:a8OnRcib4nhh0OaRAV+Yts87kKdq0PP7pXfy6kDkUVs=
 github.com/tkanos/gonfig v0.0.0-20181112185242-896f3d81fadf h1:sepG1nOX39NO8y8E+sYMkkKSDxiAfZ0XL0l0+vogwBw=
 github.com/tkanos/gonfig v0.0.0-20181112185242-896f3d81fadf/go.mod h1:DaZPBuToMc2eezA9R9nDAnmS2RMwL7yEa5YD36ESQdI=
+github.com/yossefaz/go_struct v0.0.0-20200319132611-f80429eeb2ce h1:Nf8KhHqiCcH8uW3KXLVmzIO8VsePyd+kdraJNIHX+Pk=
+github.com/yossefaz/go_struct v0.0.0-20200319132611-f80429eeb2ce/go.mod h1:2ys0IBq5f0SwSDCVHpsdsu+zlZWx68Y5b5uuU1giBxE=
 github.com/yossefazoulay/go_utils v0.0.0-20200304060037-6310acc6c7e3 h1:9kPV1gJ88wmxN1XyFL9UZSQ+WvQdEt+g/VT4Jhf3Ze8=
 github.com/yossefazoulay/go_utils v0.0.0-20200304060037-6310acc6c7e3/go.mod h1:ucV4wyWrZXmLM1Y8J/xEjYE1Ho7kt+wYNwWEx4vL13E=
 github.com/yossefazoulay/go_utils v0.0.0-20200305121600-1cdf3a9059d8 h1:wWOZVrOcs8BTEPnZFdOIKKu/dwiPFt15JoejyfEY50M=

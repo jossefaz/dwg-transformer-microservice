@@ -8,6 +8,7 @@ import (
 	"github.com/streadway/amqp"
 	"github.com/yossefazoulay/go_utils/queue"
 	globalUtils "github.com/yossefazoulay/go_utils/utils"
+	tables "github.com/yossefaz/go_struct"
 	"os"
 	"time"
 )
@@ -136,17 +137,7 @@ func getUpdateResponse(m amqp.Delivery){
 }
 
 func getRetrieveResponse(m amqp.Delivery, rmq *queue.Rabbitmq){
-	type Timestamp time.Time
-	type Cad_check_status struct {
-		Id int
-		Status_code int
-		Last_update Timestamp
-		Path string
-		Ref_num int
-		System_code int
-	}
-
-	var res []Cad_check_status
+	var res []tables.Cad_check_status
 	err := json.Unmarshal(m.Body, &res)
 	if err != nil {
 		fmt.Println(err)
@@ -156,9 +147,9 @@ func getRetrieveResponse(m amqp.Delivery, rmq *queue.Rabbitmq){
 	}
 	for _, file := range res {
 		message, err := json.Marshal(globalUtils.PickFile{
-			Id: file.Id,
+			Id: file.ID,
 			Path: file.Path,
-			Status: file.Status_code,
+			Status: *file.Status_code,
 			Result : map[string]int{
 				"Transform" : 0,
 			},
