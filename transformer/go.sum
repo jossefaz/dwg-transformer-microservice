@@ -11,10 +11,8 @@ github.com/stretchr/objx v0.1.1/go.mod h1:HFkY916IF+rwdDfMAkV7OtwuqBVzrE8GR6GFx+
 github.com/stretchr/testify v1.2.2/go.mod h1:a8OnRcib4nhh0OaRAV+Yts87kKdq0PP7pXfy6kDkUVs=
 github.com/tkanos/gonfig v0.0.0-20181112185242-896f3d81fadf h1:sepG1nOX39NO8y8E+sYMkkKSDxiAfZ0XL0l0+vogwBw=
 github.com/tkanos/gonfig v0.0.0-20181112185242-896f3d81fadf/go.mod h1:DaZPBuToMc2eezA9R9nDAnmS2RMwL7yEa5YD36ESQdI=
-github.com/yossefaz/go_utils v0.0.0-20200315092416-15583f68b66e h1:2Sn+MVPlI34tuVj0uUduVG+caTKSoYpAbmUAb6RILdg=
-github.com/yossefaz/go_utils v0.0.0-20200315092416-15583f68b66e/go.mod h1:ucV4wyWrZXmLM1Y8J/xEjYE1Ho7kt+wYNwWEx4vL13E=
-github.com/yossefaz/go_utils v0.0.0-20200315142519-86b2c4b2899a h1:qe7Qxo/321L5frXZcendnZGazUpJTx0ERVgtdcNT2qc=
-github.com/yossefaz/go_utils v0.0.0-20200315142519-86b2c4b2899a/go.mod h1:ucV4wyWrZXmLM1Y8J/xEjYE1Ho7kt+wYNwWEx4vL13E=
+github.com/yossefaz/go_utils v0.0.0-20200326160242-4eb93b96fbbf h1:Yh8kx6pZdQaACGaJFnvNVTtLZ3LLVpwHQBQEUsSjffM=
+github.com/yossefaz/go_utils v0.0.0-20200326160242-4eb93b96fbbf/go.mod h1:FwhgBHOZeCXq4zCmX+mfqw2xMg8mTCr2wY9WaJ078Ak=
 golang.org/x/sys v0.0.0-20190422165155-953cdadca894 h1:Cz4ceDQGXuKRnVBDTS23GTn/pU5OE2C0WrNTOYK1Uuc=
 golang.org/x/sys v0.0.0-20190422165155-953cdadca894/go.mod h1:h1NjWce9XRLGQEsW7wpKNCjG9DtNlClVuFLEZdDNbEs=
 gopkg.in/check.v1 v0.0.0-20161208181325-20d25e280405/go.mod h1:Co6ibVJAznAaIkqp8huTwlJQCZ016jof/cbN4VW5Yz0=
