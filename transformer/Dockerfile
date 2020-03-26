@@ -19,7 +19,7 @@ RUN go get -d -v ./... && \
 ############################
 
 FROM python:3.7.7-buster AS extracting
-LABEL maintainer="azoulayos@protonmail.com"
+LABEL maintainer="yossefaz@protonmail.com"
 RUN apt-get update && \
     apt-get install -y --no-install-recommends git autoconf libtool swig texinfo build-essential gcc python3-libxml2 && \
     LIBXML2VER=2.9.9 && \
