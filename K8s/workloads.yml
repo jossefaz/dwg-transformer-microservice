@@ -14,7 +14,7 @@
 #        spec :
 #            containers :
 #                - name : dwg-nginx
-#                  image : yossefazoulay/dwg-nginx
+#                  image : yossefaz/dwg-nginx
 #
 ---
 
@@ -34,7 +34,7 @@ spec :
         spec :
             containers :
                 - name : dwg-controller
-                  image : yossefazoulay/dwg-controller
+                  image : yossefaz/dwg-controller
                   env :
                     - name: POOL_INTERVAL
                       value: "30"
@@ -73,7 +73,7 @@ spec :
         spec :
             containers :
                 - name : dwg-transformer
-                  image : yossefazoulay/dwg-transformer
+                  image : yossefaz/dwg-transformer
                   env :
                     - name: DEV_PROD
                       value: "prod"
@@ -125,7 +125,7 @@ spec :
     spec :
       containers :
         - name : dwg-worker
-          image : yossefazoulay/dwg-worker
+          image : yossefaz/dwg-worker
           env:
             - name: DEV_PROD
               value: "prod"
@@ -153,7 +153,7 @@ spec :
     spec :
       containers :
         - name : dwg-dal
-          image : yossefazoulay/dwg-dal
+          image : yossefaz/dwg-dal
           env:
             - name: DEV_PROD
               value: "prod"

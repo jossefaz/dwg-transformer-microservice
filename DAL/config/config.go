@@ -3,13 +3,12 @@ package config
 import (
 	"dal/model"
 	"fmt"
+
 	"github.com/tkanos/gonfig"
-	"github.com/yossefazoulay/go_utils/utils"
+	"github.com/yossefaz/go_utils/utils"
 )
 
 var LocalConfig Configuration
-
-
 
 type Configuration struct {
 	Queue struct {
@@ -17,7 +16,7 @@ type Configuration struct {
 			ConnString string   `json:"ConnString"`
 			QueueNames []string `json:"QueueNames"`
 			Listennig  []string `json:"Listennig"`
-			Result    utils.Result
+			Result     utils.Result
 		} `json:"Rabbitmq"`
 	} `json:"Queue"`
 	DB struct {
@@ -27,17 +26,10 @@ type Configuration struct {
 	} `json:"DB"`
 }
 
-
-
 var configEnv = map[string]string{
-	"dev" : "./config/config.dev.json",
-	"prod" : "./config/config.prod.json",
+	"dev":  "./config/config.dev.json",
+	"prod": "./config/config.prod.json",
 }
-
-
-
-
-
 
 func GetConfig(env string) {
 	configuration := Configuration{}
@@ -48,5 +40,3 @@ func GetConfig(env string) {
 	LocalConfig = configuration
 	initReg()
 }
-
-

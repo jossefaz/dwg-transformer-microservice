@@ -3,16 +3,17 @@ package main
 import (
 	"controller/config"
 	"controller/utils"
-	"github.com/yossefazoulay/go_utils/queue"
-	globalUtils "github.com/yossefazoulay/go_utils/utils"
 	"os"
 	"os/signal"
 	"strconv"
 	"syscall"
 	"time"
+
+	"github.com/yossefaz/go_utils/queue"
+	globalUtils "github.com/yossefaz/go_utils/utils"
 )
 
-func init(){
+func init() {
 	environment, err := globalUtils.GetEnv("DEV_PROD")
 	utils.HandleError(err, "Error while getting env variable", err != nil)
 	config.GetConfig(environment)
@@ -28,7 +29,7 @@ func main() {
 	defer rmqConn.ChanL.Close()
 
 	poolInterval, err := strconv.Atoi(os.Getenv("POOL_INTERVAL"))
-	utils.HandleError(err, "Cannot set environment variable POOL_INTERVAL to integer, check if POOL_INTERVAL is set and if it is an integer", err!=nil)
+	utils.HandleError(err, "Cannot set environment variable POOL_INTERVAL to integer, check if POOL_INTERVAL is set and if it is an integer", err != nil)
 	tick := time.NewTicker(time.Second * time.Duration(poolInterval))
 	done := make(chan bool)
 	sigs := make(chan os.Signal, 1)
@@ -39,7 +40,3 @@ func main() {
 	done <- true
 
 }
-
-
-
-

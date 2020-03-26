@@ -4,13 +4,14 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"github.com/streadway/amqp"
-	"github.com/yossefazoulay/go_utils/queue"
-	globalUtils "github.com/yossefazoulay/go_utils/utils"
 	"listener/config"
 	"os"
 	"os/exec"
 	"strings"
+
+	"github.com/streadway/amqp"
+	"github.com/yossefaz/go_utils/queue"
+	globalUtils "github.com/yossefaz/go_utils/utils"
 )
 
 func HandleError(err error, msg string, exit bool) {
@@ -22,31 +23,29 @@ func HandleError(err error, msg string, exit bool) {
 	}
 }
 
-func MessageReceiver(m amqp.Delivery, rmq *queue.Rabbitmq)  {
+func MessageReceiver(m amqp.Delivery, rmq *queue.Rabbitmq) {
 	if err := m.Ack(false); err != nil {
 		config.Logger.Log.Error(fmt.Sprintf("Error acknowledging message : %s", err))
 	} else {
 		pFIle := &globalUtils.PickFile{}
-		HandleError(json.Unmarshal(m.Body, pFIle), "Error decoding message in worker",false)
-		res, err1:= execute(pFIle)
+		HandleError(json.Unmarshal(m.Body, pFIle), "Error decoding message in worker", false)
+		res, err1 := execute(pFIle)
 		if err1 != nil {
-			mess, err :=rmq.SendMessage([]byte(err1.Error()), config.LocalConfig.Queue.Rabbitmq.Result.Success, map[string]interface{}{
-				"From" : config.LocalConfig.Queue.Rabbitmq.Result.From,
-				"To" : config.LocalConfig.Queue.Rabbitmq.Result.Success,
+			mess, err := rmq.SendMessage([]byte(err1.Error()), config.LocalConfig.Queue.Rabbitmq.Result.Success, map[string]interface{}{
+				"From": config.LocalConfig.Queue.Rabbitmq.Result.From,
+				"To":   config.LocalConfig.Queue.Rabbitmq.Result.Success,
 			})
 			HandleError(err, "message sending error", false)
 			config.Logger.Log.Info(fmt.Sprintf(mess))
 		}
-		mess, err2 :=rmq.SendMessage(res, config.LocalConfig.Queue.Rabbitmq.Result.Success, map[string]interface{}{
-			"From" : config.LocalConfig.Queue.Rabbitmq.Result.From,
-			"To" : config.LocalConfig.Queue.Rabbitmq.Result.Success,
+		mess, err2 := rmq.SendMessage(res, config.LocalConfig.Queue.Rabbitmq.Result.Success, map[string]interface{}{
+			"From": config.LocalConfig.Queue.Rabbitmq.Result.From,
+			"To":   config.LocalConfig.Queue.Rabbitmq.Result.Success,
 		})
 		HandleError(err2, "message sending error", false)
 		config.Logger.Log.Info(fmt.Sprintf(mess))
 	}
 }
-
-
 
 func convertMapKeysToString(customMap map[string]int) string {
 	var b bytes.Buffer
@@ -58,32 +57,31 @@ func convertMapKeysToString(customMap map[string]int) string {
 	return b.String()
 
 }
-func execute(pfile *globalUtils.PickFile) ([]byte, error){
+func execute(pfile *globalUtils.PickFile) ([]byte, error) {
 	checks := convertMapKeysToString(pfile.Result)
-	config.Logger.Log.Debug("SEND CHECKS ", fmt.Sprintf(` "%s" `, checks) )
+	config.Logger.Log.Debug("SEND CHECKS ", fmt.Sprintf(` "%s" `, checks))
 	cmd := exec.Command("python", "bootstrap.py", pfile.Path, checks)
 	out, err := cmd.CombinedOutput()
 	if err != nil {
-		HandleError(err, "cannot execute python : " + string(out), false)
+		HandleError(err, "cannot execute python : "+string(out), false)
 		return nil, err
 	}
 	return setResult(pfile, out), nil
 }
 
-func setResult(pfile *globalUtils.PickFile, cmdRes []byte)[]byte {
+func setResult(pfile *globalUtils.PickFile, cmdRes []byte) []byte {
 	resMap := make(map[string]int)
-	stringed :=  strings.Trim(string(cmdRes), "\n")
+	stringed := strings.Trim(string(cmdRes), "\n")
 	err := json.Unmarshal([]byte(stringed), &resMap)
 	for k, v := range resMap {
 		pfile.Result[k] = v
 	}
 	res, err := json.Marshal(pfile)
 	if err != nil {
-		HandleError(err, "Cannot set output and cannot run command :" + err.Error() + err.Error(), false)
+		HandleError(err, "Cannot set output and cannot run command :"+err.Error()+err.Error(), false)
 	}
 	return res
 }
 func getResultConfig() globalUtils.Result {
 	return config.LocalConfig.Queue.Rabbitmq.Result
 }
-

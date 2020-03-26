@@ -1,15 +1,15 @@
 version : '3'
 services :
-#  rabbitmq:
-#    image: rabbitmq:management
-#    ports:
-#      - 15672:15672
-#      - 5672:5672
-#    healthcheck:
-#      test: ["CMD", "curl", "-f", "http://localhost:5672"]
-#      interval: 30s
-#      timeout: 10s
-#      retries: 5
+ rabbitmq:
+   image: rabbitmq:management
+   ports:
+     - 15672:15672
+     - 5672:5672
+   healthcheck:
+     test: ["CMD", "curl", "-f", "http://localhost:5672"]
+     interval: 30s
+     timeout: 10s
+     retries: 5
   mysql:
     image: mysql:5.7
     restart: always
@@ -31,52 +31,52 @@ services :
     volumes:
       - dwg_transformer:/var/lib/mysql
 
-#  controller :
-#    depends_on :
-#      - rabbitmq
-#    image: yossefazoulay/dwg-controller
-#    restart: on-failure
-#    environment:
-#        POOL_INTERVAL : '30'
-#        DEV_PROD : 'prod'
-#        CAD_STATUS : 'CAD_check_status'
-#        CAD_ERRORS : 'CAD_check_errors'
-#        DB : 'mysql'
-#        SCHEMA : 'dwg_transformer'
-#
-#    volumes:
-#      - ./uploads:/app/shared
-#
-#  transformer :
-#    depends_on :
-#      - rabbitmq
-#    image: yossefazoulay/dwg-transformer
-#    restart: on-failure
-#    environment:
-#        EXPORT_FORMAT: 'DXF'
-#        DEV_PROD: 'prod'
-#    volumes:
-#      - ./uploads:/app/shared
-#
-#  worker:
-#    depends_on:
-#      - rabbitmq
-#    image: yossefazoulay/dwg-worker
-#    restart: on-failure
-#    environment:
-#        DEV_PROD: 'prod'
-#    volumes:
-#      - ./uploads:/app/shared
-#
-#  DAL:
-#    depends_on:
-#      - rabbitmq
-#    image: yossefazoulay/dwg-dal
-#    restart: on-failure
-#    environment:
-#        DEV_PROD: 'prod'
-#    volumes:
-#        - ./uploads:/app/shared
+ controller :
+   depends_on :
+     - rabbitmq
+   image: yossefaz/dwg-controller
+   restart: on-failure
+   environment:
+       POOL_INTERVAL : '30'
+       DEV_PROD : 'prod'
+       CAD_STATUS : 'CAD_check_status'
+       CAD_ERRORS : 'CAD_check_errors'
+       DB : 'mysql'
+       SCHEMA : 'dwg_transformer'
+
+   volumes:
+     - ./uploads:/app/shared
+
+ transformer :
+   depends_on :
+     - rabbitmq
+   image: yossefaz/dwg-transformer
+   restart: on-failure
+   environment:
+       EXPORT_FORMAT: 'DXF'
+       DEV_PROD: 'prod'
+   volumes:
+     - ./uploads:/app/shared
+
+ worker:
+   depends_on:
+     - rabbitmq
+   image: yossefaz/dwg-worker
+   restart: on-failure
+   environment:
+       DEV_PROD: 'prod'
+   volumes:
+     - ./uploads:/app/shared
+
+ DAL:
+   depends_on:
+     - rabbitmq
+   image: yossefaz/dwg-dal
+   restart: on-failure
+   environment:
+       DEV_PROD: 'prod'
+   volumes:
+       - ./uploads:/app/shared
 volumes:
   dwg_transformer:
 

@@ -4,14 +4,16 @@ import (
 	"controller/config"
 	"encoding/json"
 	"fmt"
-	"github.com/mitchellh/mapstructure"
-	"github.com/streadway/amqp"
-	"github.com/yossefazoulay/go_utils/queue"
-	globalUtils "github.com/yossefazoulay/go_utils/utils"
-	tables "github.com/yossefaz/go_struct"
 	"os"
 	"time"
+
+	"github.com/mitchellh/mapstructure"
+	"github.com/streadway/amqp"
+	tables "github.com/yossefaz/go_struct"
+	"github.com/yossefaz/go_utils/queue"
+	globalUtils "github.com/yossefaz/go_utils/utils"
 )
+
 func HandleError(err error, msg string, exit bool) {
 	if err != nil {
 		config.Logger.Log.Error(fmt.Sprintf("%s: %s", msg, err))
@@ -21,11 +23,11 @@ func HandleError(err error, msg string, exit bool) {
 	}
 }
 
-func MessageReceiver(m amqp.Delivery, rmq *queue.Rabbitmq)  {
+func MessageReceiver(m amqp.Delivery, rmq *queue.Rabbitmq) {
 	switch m.Headers["From"] {
 	case "Transformer":
 		getMessageFromTransformer(m, rmq)
-	case "Worker" :
+	case "Worker":
 		GetMessageFromWorker(m, rmq)
 	case "DAL":
 		PoolReceiver(m, rmq)
@@ -34,7 +36,7 @@ func MessageReceiver(m amqp.Delivery, rmq *queue.Rabbitmq)  {
 	}
 }
 
-func unpackFileMessage(m amqp.Delivery) *globalUtils.PickFile{
+func unpackFileMessage(m amqp.Delivery) *globalUtils.PickFile {
 	log := config.Logger.Log
 	pFIle := &globalUtils.PickFile{}
 	err := json.Unmarshal(m.Body, pFIle)
@@ -47,29 +49,27 @@ func unpackFileMessage(m amqp.Delivery) *globalUtils.PickFile{
 
 func getMessageFromTransformer(m amqp.Delivery, rmq *queue.Rabbitmq) {
 	pFIle := unpackFileMessage(m)
-	log:= config.Logger.Log
+	log := config.Logger.Log
 	if pFIle.Result["Transform"] == 1 {
 		pFIle.Result = map[string]int{
-			"BorderExist" : 0,
-			"InsideJer" : 0,
+			"BorderExist": 0,
+			"InsideJer":   0,
 		}
 
 		mess, err := json.Marshal(pFIle)
 		HandleError(err, "cannot convert transformed pFile to Json", false)
-		res, err1 := rmq.SendMessage(mess, Constant.Channels.CheckDWG,  Constant.Headers["CheckDWG"])
+		res, err1 := rmq.SendMessage(mess, Constant.Channels.CheckDWG, Constant.Headers["CheckDWG"])
 		HandleError(err1, "message sending error", false)
 		config.Logger.Log.Info(res)
 	} else if pFIle.Result["Transform"] == 0 {
 		pFIle.Result["Transform"] = 1 // make the transform as error for create error
-		createErrors := CreateDBMessage(map[string]interface{}{"check_status_id" : pFIle.Id}, Constant.CRUD.CREATE, Constant.Cad_errors_table, fillStructFromResult(pFIle))
-		mess := CreateDBMessage(map[string]interface{}{"Id" : pFIle.Id}, Constant.CRUD.UPDATE, Constant.Cad_check_table, map[string]interface{}{"status_code" : 20})
+		createErrors := CreateDBMessage(map[string]interface{}{"check_status_id": pFIle.Id}, Constant.CRUD.CREATE, Constant.Cad_errors_table, fillStructFromResult(pFIle))
+		mess := CreateDBMessage(map[string]interface{}{"Id": pFIle.Id}, Constant.CRUD.UPDATE, Constant.Cad_check_table, map[string]interface{}{"status_code": 20})
 		sendMessageToQueue(createErrors, Constant.Channels.Dal_Req, Constant.Headers["Dal_Req"], rmq)
 		sendMessageToQueue(mess, Constant.Channels.Dal_Req, Constant.Headers["Dal_Req"], rmq)
-		log.Error("The transformer did not sucess to transform this file : " , pFIle.Path)
+		log.Error("The transformer did not sucess to transform this file : ", pFIle.Path)
 	}
 }
-
-
 
 func CheckResultsFromWorker(pFile *globalUtils.PickFile) int {
 	for _, val := range pFile.Result {
@@ -80,20 +80,20 @@ func CheckResultsFromWorker(pFile *globalUtils.PickFile) int {
 	return 10
 }
 
-func fillStructFromResult (pFile *globalUtils.PickFile) map[string]interface{} {
+func fillStructFromResult(pFile *globalUtils.PickFile) map[string]interface{} {
 	resultMap := map[string]interface{}{}
 	err := mapstructure.Decode(pFile.Result, &resultMap)
 	HandleError(err, "cannot decode object to ORMKeyval", false)
 	return resultMap
 }
 
-func CreateDBMessage(ids map[string]interface{},  crud string, table string, keyval map[string]interface{}) []byte {
+func CreateDBMessage(ids map[string]interface{}, crud string, table string, keyval map[string]interface{}) []byte {
 	mess, err1 := json.Marshal(globalUtils.DbQuery{
-		DbType: Constant.DBType,
-		Schema:Constant.Schema,
-		Table:  table,
-		CrudT:  crud,
-		Id: ids,
+		DbType:    Constant.DBType,
+		Schema:    Constant.Schema,
+		Table:     table,
+		CrudT:     crud,
+		Id:        ids,
 		ORMKeyVal: keyval,
 	})
 	if err1 != nil {
@@ -103,7 +103,7 @@ func CreateDBMessage(ids map[string]interface{},  crud string, table string, key
 }
 
 func sendMessageToQueue(body []byte, queueName string, headers map[string]interface{}, rmq *queue.Rabbitmq) {
-	message, err := rmq.SendMessage(body,queueName , headers)
+	message, err := rmq.SendMessage(body, queueName, headers)
 	if err != nil {
 		config.Logger.Log.Error(err)
 	} else {
@@ -111,13 +111,12 @@ func sendMessageToQueue(body []byte, queueName string, headers map[string]interf
 	}
 }
 
-
 func GetMessageFromWorker(m amqp.Delivery, rmq *queue.Rabbitmq) {
 	pFIle := unpackFileMessage(m)
 	status := CheckResultsFromWorker(pFIle)
 	if pFIle.Status != status || status == 20 {
-		createErrors := CreateDBMessage(map[string]interface{}{"check_status_id" : pFIle.Id}, Constant.CRUD.CREATE, Constant.Cad_errors_table, fillStructFromResult(pFIle))
-		mess := CreateDBMessage(map[string]interface{}{"Id" : pFIle.Id}, Constant.CRUD.UPDATE, Constant.Cad_check_table, map[string]interface{}{"status_code" : status})
+		createErrors := CreateDBMessage(map[string]interface{}{"check_status_id": pFIle.Id}, Constant.CRUD.CREATE, Constant.Cad_errors_table, fillStructFromResult(pFIle))
+		mess := CreateDBMessage(map[string]interface{}{"Id": pFIle.Id}, Constant.CRUD.UPDATE, Constant.Cad_check_table, map[string]interface{}{"status_code": status})
 		sendMessageToQueue(createErrors, Constant.Channels.Dal_Req, Constant.Headers["Dal_Req"], rmq)
 		sendMessageToQueue(mess, Constant.Channels.Dal_Req, Constant.Headers["Dal_Req"], rmq)
 	}
@@ -132,11 +131,11 @@ func PoolReceiver(m amqp.Delivery, rmq *queue.Rabbitmq) {
 	}
 }
 
-func getUpdateResponse(m amqp.Delivery){
+func getUpdateResponse(m amqp.Delivery) {
 	config.Logger.Log.Info(string(m.Body))
 }
 
-func getRetrieveResponse(m amqp.Delivery, rmq *queue.Rabbitmq){
+func getRetrieveResponse(m amqp.Delivery, rmq *queue.Rabbitmq) {
 	var res []tables.Cad_check_status
 	err := json.Unmarshal(m.Body, &res)
 	if err != nil {
@@ -147,11 +146,11 @@ func getRetrieveResponse(m amqp.Delivery, rmq *queue.Rabbitmq){
 	}
 	for _, file := range res {
 		message, err := json.Marshal(globalUtils.PickFile{
-			Id: file.ID,
-			Path: file.Path,
+			Id:     file.ID,
+			Path:   file.Path,
 			Status: *file.Status_code,
-			Result : map[string]int{
-				"Transform" : 0,
+			Result: map[string]int{
+				"Transform": 0,
 			},
 		})
 		HandleError(err, "Cannot encode JSON", false)
@@ -164,7 +163,7 @@ func getRetrieveResponse(m amqp.Delivery, rmq *queue.Rabbitmq){
 }
 
 func Pooling(rmqConn *queue.Rabbitmq) {
-	mess := CreateDBMessage(map[string]interface{}{}, Constant.CRUD.RETRIEVE, Constant.Cad_check_table, map[string]interface{}{"status_code" : 0})
+	mess := CreateDBMessage(map[string]interface{}{}, Constant.CRUD.RETRIEVE, Constant.Cad_check_table, map[string]interface{}{"status_code": 0})
 	sendMessageToQueue(mess, Constant.Channels.Dal_Req, Constant.Headers["Dal_Req"], rmqConn)
 }
 

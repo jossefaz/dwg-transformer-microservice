@@ -4,15 +4,15 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/streadway/amqp"
-	"github.com/yossefazoulay/go_utils/queue"
-	globalUtils "github.com/yossefazoulay/go_utils/utils"
 	"os"
 	"os/exec"
 	"strings"
 	"transformer/config"
-)
 
+	"github.com/streadway/amqp"
+	"github.com/yossefaz/go_utils/queue"
+	globalUtils "github.com/yossefaz/go_utils/utils"
+)
 
 func HandleError(err error, msg string, exit bool) {
 	if err != nil {
@@ -23,24 +23,24 @@ func HandleError(err error, msg string, exit bool) {
 	}
 }
 
-func MessageReceiver(m amqp.Delivery, rmq *queue.Rabbitmq)  {
+func MessageReceiver(m amqp.Delivery, rmq *queue.Rabbitmq) {
 	resultConfig := getResultConfig()
 	log := config.Logger.Log
 	pFIle := &globalUtils.PickFile{}
 	err := json.Unmarshal(m.Body, pFIle)
 	HandleError(err, "Error decoding message", false)
-	if m.Headers["From"] !=  resultConfig.From{
+	if m.Headers["From"] != resultConfig.From {
 		if err := m.Ack(false); err != nil {
 			log.Error("Error acknowledging message : %s", err)
 		} else {
-			res, err:= execute(pFIle, config.LocalConfig.OutputFormat)
+			res, err := execute(pFIle, config.LocalConfig.OutputFormat)
 			if err != nil {
 				config.Logger.Log.Error("cannot execute transformation on path :", pFIle.Path)
 			}
 			mess, err1 := rmq.SendMessage(res, resultConfig.Success, map[string]interface{}{
-				"From" : "Transformer",
-				"To" : resultConfig.Success,
-			} )
+				"From": "Transformer",
+				"To":   resultConfig.Success,
+			})
 			HandleError(err1, "message sending error", false)
 			config.Logger.Log.Info(mess)
 
@@ -52,7 +52,7 @@ func getResultConfig() globalUtils.Result {
 	return config.LocalConfig.Queue.Rabbitmq.Result
 }
 
-func execute(pfile *globalUtils.PickFile, output string) ([]byte, error){
+func execute(pfile *globalUtils.PickFile, output string) ([]byte, error) {
 	outpath, convert := getOutputPath(pfile.Path, output)
 	if convert {
 		cmd := exec.Command("dwgread", pfile.Path, "-O", output, "-o", outpath)
@@ -60,12 +60,12 @@ func execute(pfile *globalUtils.PickFile, output string) ([]byte, error){
 		if err != nil {
 			return setResult(pfile, pfile.Path, true), err
 		}
-		return setResult(pfile, outpath,  false), nil
+		return setResult(pfile, outpath, false), nil
 	}
-	return setResult(pfile, outpath,  true), errors.New("not dwg or dxf")
+	return setResult(pfile, outpath, true), errors.New("not dwg or dxf")
 }
 
-func setResult(pfile *globalUtils.PickFile, path string, error bool)[]byte {
+func setResult(pfile *globalUtils.PickFile, path string, error bool) []byte {
 	execRes := 1
 	if error {
 		execRes = 0
@@ -74,14 +74,13 @@ func setResult(pfile *globalUtils.PickFile, path string, error bool)[]byte {
 	for k := range pfile.Result {
 		keys = append(keys, k)
 	}
-	mess, err := globalUtils.SetResultMessage(pfile, keys, []int {execRes}, path)
+	mess, err := globalUtils.SetResultMessage(pfile, keys, []int{execRes}, path)
 
 	if err != nil {
-		HandleError(err, "Cannot set output and cannot run command :" + err.Error() + err.Error(), false)
+		HandleError(err, "Cannot set output and cannot run command :"+err.Error()+err.Error(), false)
 	}
 	return mess
-	}
-
+}
 
 func getOutputPath(basePath string, output string) (string, bool) {
 	fileExt := config.LocalConfig.FileExtensions[output]

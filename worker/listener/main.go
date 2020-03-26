@@ -1,13 +1,14 @@
 package main
 
 import (
-	"github.com/yossefazoulay/go_utils/queue"
 	"listener/config"
 	"listener/utils"
-	globalUtils "github.com/yossefazoulay/go_utils/utils"
+
+	"github.com/yossefaz/go_utils/queue"
+	globalUtils "github.com/yossefaz/go_utils/utils"
 )
 
-func init(){
+func init() {
 	environment, err := globalUtils.GetEnv("DEV_PROD")
 	utils.HandleError(err, "Error while getting env variable", err != nil)
 	config.GetConfig(environment)

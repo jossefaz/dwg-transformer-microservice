@@ -2,11 +2,11 @@ package config
 
 import (
 	"fmt"
-	"github.com/tkanos/gonfig"
-	"github.com/yossefazoulay/go_utils/logs"
-	"github.com/yossefazoulay/go_utils/utils"
-)
 
+	"github.com/tkanos/gonfig"
+	"github.com/yossefaz/go_utils/logs"
+	"github.com/yossefaz/go_utils/utils"
+)
 
 type Configuration struct {
 	Queue struct {
@@ -16,22 +16,21 @@ type Configuration struct {
 			Listennig  []string `json:"Listennig"`
 		} `json:"Rabbitmq"`
 	} `json:"Queue"`
-	Logs struct{
-	Main struct{
-		Path string
-		Level string
+	Logs struct {
+		Main struct {
+			Path  string
+			Level string
+		}
 	}
-}
 }
 
 var configEnv = map[string]string{
-	"dev" : "./config/config.dev.json",
-	"prod" : "./config/config.prod.json",
+	"dev":  "./config/config.dev.json",
+	"prod": "./config/config.prod.json",
 }
 
 var LocalConfig Configuration
 var Logger utils.Logger
-
 
 func GetConfig(env string) {
 	configuration := Configuration{}
@@ -45,6 +44,4 @@ func GetConfig(env string) {
 		fmt.Println("Cannot instantiate logger : ", err)
 	}
 
-
 }
-

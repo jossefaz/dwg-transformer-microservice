@@ -2,18 +2,18 @@ package log
 
 import (
 	"fmt"
+
 	"github.com/tkanos/gonfig"
-	"github.com/yossefazoulay/go_utils/logs"
-	"github.com/yossefazoulay/go_utils/utils"
+	"github.com/yossefaz/go_utils/logs"
+	"github.com/yossefaz/go_utils/utils"
 )
 
 var Logger utils.Logger
 
 var configEnv = map[string]string{
-	"dev" : "./config/logs.json",
-	"prod" : "./config/logs.json",
+	"dev":  "./config/logs.json",
+	"prod": "./config/logs.json",
 }
-
 
 type logConfiguration struct {
 	Logs struct {

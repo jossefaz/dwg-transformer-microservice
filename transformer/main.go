@@ -1,13 +1,14 @@
 package main
 
 import (
-	"github.com/yossefazoulay/go_utils/queue"
-	globalUtils "github.com/yossefazoulay/go_utils/utils"
 	"transformer/config"
 	"transformer/utils"
+
+	"github.com/yossefaz/go_utils/queue"
+	globalUtils "github.com/yossefaz/go_utils/utils"
 )
 
-func init(){
+func init() {
 	environment, err := globalUtils.GetEnv("DEV_PROD")
 	utils.HandleError(err, "Error while getting env variable", err != nil)
 	exportFormat, err := globalUtils.GetEnv("EXPORT_FORMAT")
@@ -25,8 +26,4 @@ func main() {
 	defer rmqConn.ChanL.Close()
 	rmqConn.OpenListening(queueConf.Listennig, utils.MessageReceiver)
 
-
-
 }
-
-
