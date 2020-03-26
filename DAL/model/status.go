@@ -5,7 +5,7 @@ import (
 	tables "github.com/yossefaz/go_struct"
 )
 
-func StatusUpdate(db *CDb, where map[string]interface{}, update map[string]interface{}) ([]byte, error){
+func StatusUpdate(db *CDb, where map[string]interface{}, update map[string]interface{}) ([]byte, error) {
 	errors := db.Model(tables.Cad_check_status{}).Where(where).Updates(update).GetErrors()
 	err := HandleDBErrors(errors)
 	if err != nil {
@@ -13,7 +13,3 @@ func StatusUpdate(db *CDb, where map[string]interface{}, update map[string]inter
 	}
 	return []byte(fmt.Sprintf(string(db.RowsAffected), " rows were updated")), nil
 }
-
-
-
-

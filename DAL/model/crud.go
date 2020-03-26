@@ -5,7 +5,7 @@ import (
 	"fmt"
 )
 
-func Retrieve (atts interface{}, db *CDb, keyval map[string]interface{})([]byte, error) {
+func Retrieve(atts interface{}, db *CDb, keyval map[string]interface{}) ([]byte, error) {
 	errors := db.Where(keyval).Find(atts).GetErrors()
 	err := HandleDBErrors(errors)
 	if err != nil {
@@ -15,7 +15,7 @@ func Retrieve (atts interface{}, db *CDb, keyval map[string]interface{})([]byte,
 	return b, nil
 }
 
-func Create (atts interface{}, db *CDb)([]byte, error) {
+func Create(atts interface{}, db *CDb) ([]byte, error) {
 	errors := db.Create(atts).GetErrors()
 	err := HandleDBErrors(errors)
 	if err != nil {
