@@ -2,14 +2,15 @@ sudo : required
 services :
     - docker
 script :
+    echo "OK"
+
+after_sucess :
     - echo "$DOCKER_PWD" | docker login -u "$DOCKER_ID" --password-stdin
     - docker build -t yossefaz/dwg-transformer ./transformer
     - docker build -t yossefaz/dwg-nginx ./nginx/
     - docker build -t yossefaz/dwg-controller ./controller
     - docker build -t yossefaz/dwg-worker ./worker
     - docker build -t yossefaz/dwg-dal ./DAL
-
-after_sucess :
     - docker push yossefaz/dwg-transformer
     - docker push yossefaz/dwg-nginx
     - docker push yossefaz/dwg-controller
