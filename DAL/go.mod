@@ -1,4 +1,4 @@
-d module dal
+module dal
 
 go 1.14
 
