@@ -12,7 +12,7 @@
   },
   "Logs" : {
     "Main" : {
-      "Path" : "shared/controller.log",
+      "Path" : "controller.log",
       "Level" : "DEBUG"
     }
   }

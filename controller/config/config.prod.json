@@ -1,7 +1,7 @@
 {
   "Queue" : {
     "Rabbitmq" : {
-      "ConnString" : "amqp://guest:guest@rabbitmq?connection_attempts=5&retry_delay=5",
+      "ConnString" : "amqp://guest:guest@localhost:5672?connection_attempts=5&retry_delay=5",
       "QueueNames" : [
         "ConvertedDWG", "CheckedDWG", "ConvertDWG", "CheckDWG", "Dal_Res", "Dal_Req"
       ],
@@ -12,7 +12,7 @@
   },
   "Logs" : {
       "Main" : {
-        "Path" : "shared/controller.log",
+        "Path" : "controller.log",
         "Level" : "DEBUG"
       }
   }

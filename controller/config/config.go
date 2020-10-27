@@ -2,6 +2,7 @@ package config
 
 import (
 	"fmt"
+	"os"
 
 	"github.com/tkanos/gonfig"
 	"github.com/yossefaz/go_utils/logs"
@@ -25,8 +26,8 @@ type Configuration struct {
 }
 
 var configEnv = map[string]string{
-	"dev":  "./config/config.dev.json",
-	"prod": "./config/config.prod.json",
+	"dev":  "./controller/config/config.dev.json",
+	"prod": "./controller/config/config.prod.json",
 }
 
 var LocalConfig Configuration
@@ -34,6 +35,8 @@ var Logger utils.Logger
 
 func GetConfig(env string) {
 	configuration := Configuration{}
+	dir, _ := os.Getwd()
+	fmt.Println(dir)
 	err := gonfig.GetConf(configEnv[env], &configuration)
 	if err != nil {
 		fmt.Println("Cannot read config file")

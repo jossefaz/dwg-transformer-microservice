@@ -1,7 +1,7 @@
 package main
 
 import (
-	"controller/config"
+	"github.com/yossefaz/dwg-transformer-microservice/controller/config"
 	"controller/utils"
 	"os"
 	"os/signal"
